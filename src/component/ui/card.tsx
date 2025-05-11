@@ -41,6 +41,18 @@ export const Card = ({ title, type, link }: CardProps) => {
                             <a href={link.replace('x', 'twitter')}></a>
                         </blockquote>
                     )}
+                    {type === 'facebook' && (
+                        <iframe
+                            src={link}
+                            width="300"
+                            height="300"
+                            style={{ border: 'none', borderRadius: '7px', overflow: 'hidden' }}
+                            scrolling="no"
+                            frameBorder="0"
+                            allowFullScreen={true}
+                            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                        ></iframe>
+                    )}
                 </div>
             </div>
         </>
