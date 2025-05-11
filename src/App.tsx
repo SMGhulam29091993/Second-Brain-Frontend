@@ -8,7 +8,7 @@ function App() {
     let link4 = 'https://github.com/Bharat2044/100xDevs-Cohort3-WebDev-and-Devops';
 
     return (
-        <div className="flex items-center justify-center gap-2 h-screen">
+        <div className="flex items-center justify-center flex-wrap gap-2">
             <Card title={'Test Card Youtube'} link={link} type={'youtube'} />
             <Card title={'Test Card Twitter/X'} link={link2} type={'twitter'} />
             <Card title={'Test Card Facebook'} link={link3} type={'facebook'} />
