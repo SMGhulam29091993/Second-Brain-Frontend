@@ -170,7 +170,7 @@ export const Card = ({ title, type, link }: CardProps) => {
                         ></iframe>
                     )}
                     {type === 'twitter' && (
-                        <div className="w-full h-48 overflow-hidden">
+                        <div className="w-full h-48 overflow-hidden p-2">
                             <blockquote className="twitter-tweet">
                                 <a href={link.replace('x', 'twitter')}></a>
                             </blockquote>
@@ -180,7 +180,7 @@ export const Card = ({ title, type, link }: CardProps) => {
                         <iframe
                             src={processFacebookUrl(link)}
                             className="w-full h-48"
-                            style={{ border: 'none', overflow: 'hidden' }}
+                            style={{ border: 'none', overflow: 'auto' }}
                             scrolling="no"
                             frameBorder="0"
                             allowFullScreen={true}
