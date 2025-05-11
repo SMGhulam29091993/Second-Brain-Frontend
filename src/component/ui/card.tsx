@@ -1,6 +1,10 @@
 import { DeleteIcon } from '../../icons/DeleteIcons';
 import { ShareIcon } from '../../icons/ShareIcons';
 import { useEffect, useState } from 'react';
+import { YoutubeIcon } from '../../icons/YoutubeIcons';
+import { FacebookIcon } from '../../icons/FacebookIcon';
+import { TwitterIcon } from '../../icons/TwitterIcon';
+import { GithubIcon } from '../../icons/GithubIcon';
 
 interface CardProps {
     title: string;
@@ -117,7 +121,29 @@ export const Card = ({ title, type, link }: CardProps) => {
             <div className="p-3 flex flex-col justify-center bg-slate-200 rounded-md border-amber-400 shadow-lg max-w-72 min-h-52">
                 <div className="flex items-center justify-between gap-2">
                     <div className="cursor-text font-semibold w-28">
-                        <h4 className="truncate">{title}</h4>
+                        <h4 className="truncate">
+                            {type === 'facebook' ? (
+                                <span className="flex items-center flex-wrap gap-1">
+                                    <FacebookIcon />
+                                    Facebook
+                                </span>
+                            ) : type === 'youtube' ? (
+                                <span className="flex items-center flex-wrap gap-1">
+                                    <YoutubeIcon />
+                                    Youtube
+                                </span>
+                            ) : type === 'twitter' ? (
+                                <span className="flex items-center flex-wrap gap-1">
+                                    <TwitterIcon />
+                                    Twitter
+                                </span>
+                            ) : (
+                                <span className="flex items-center flex-wrap gap-1">
+                                    <GithubIcon />
+                                    Github
+                                </span>
+                            )}
+                        </h4>
                     </div>
                     <div className="flex items-center gap-1 cursor-pointer">
                         <span className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300">
@@ -127,6 +153,9 @@ export const Card = ({ title, type, link }: CardProps) => {
                             <DeleteIcon />
                         </span>
                     </div>
+                </div>
+                <div className="font-bold w-32">
+                    <h3 className="truncate">{title}</h3>
                 </div>
                 <div className="mt-2 hover:scale-102 transition-all duration-300 cursor-pointer">
                     {type === 'youtube' && (
