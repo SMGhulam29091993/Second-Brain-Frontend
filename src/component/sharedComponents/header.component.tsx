@@ -36,7 +36,7 @@ export const Header: React.FC<HeaderProps> = ({ setOpen }) => {
         <div className="flex items-center justify-between p-4 text-white">
             <div className="flex items-center gap-2 dark:text-slate-100">
                 <BrainIcon />
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                <h2 className="md:text-2xl font-bold text-slate-900 dark:text-slate-100">
                     <span className="text-orange-300 italic">Second</span> Brain
                 </h2>
             </div>
