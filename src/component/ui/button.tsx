@@ -56,7 +56,7 @@ export const Button = ({
             ) : (
                 <>
                     {startIcon && <span className="mr-2">{startIcon}</span>}
-                    <span>{text}</span>
+                    <span className="hidden md:block">{text}</span>
                     {endIcon && <span className="ml-2">{endIcon}</span>}
                 </>
             )}
