@@ -1,6 +1,7 @@
 import React from 'react';
 import { CloseIcon } from '../../icons/CloseIcon';
 import { Button } from '../ui/button';
+import { SubmitIcon } from '../../icons/SubmitIcon';
 
 interface AddContentModalProps {
     open: boolean;
@@ -71,6 +72,7 @@ export const AddContentModal: React.FC<AddContentModalProps> = ({ open, onClose 
                                     variants="primary"
                                     text="Submit"
                                     size="md"
+                                    startIcon={<SubmitIcon />}
                                     onClick={() => console.log('Add Content')}
                                 />
                             </div>
