@@ -55,7 +55,7 @@ export const Button = ({
                 <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
             ) : (
                 <>
-                    {startIcon && <span className="mr-2">{startIcon}</span>}
+                    {startIcon && <span className="md:mr-2 ">{startIcon}</span>}
                     <span className="hidden md:block">{text}</span>
                     {endIcon && <span className="ml-2">{endIcon}</span>}
                 </>
