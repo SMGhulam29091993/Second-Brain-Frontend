@@ -1,8 +1,8 @@
 export const SubmitIcon = () => {
     return (
         <svg
-            width="30px"
-            height="30px"
+            width="22px"
+            height="22px"
             viewBox="0 0 1024 1024"
             className="icon"
             fill="currentColor"
