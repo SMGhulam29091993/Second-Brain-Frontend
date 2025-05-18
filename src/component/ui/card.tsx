@@ -8,7 +8,7 @@ import { GithubIcon } from '../../icons/GithubIcon';
 
 interface CardProps {
     title: string;
-    type: 'youtube' | 'facebook' | 'twitter' | 'github';
+    source: 'youtube' | 'facebook' | 'twitter' | 'github';
     link: string;
 }
 
@@ -26,7 +26,7 @@ interface GithubRepo {
     updated_at: string;
 }
 
-export const Card = ({ title, type, link }: CardProps) => {
+export const Card = ({ title, source, link }: CardProps) => {
     const [repoData, setRepoData] = useState<GithubRepo | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -86,7 +86,19 @@ export const Card = ({ title, type, link }: CardProps) => {
     };
 
     useEffect(() => {
-        if (type === 'github') {
+        //to dynamically load the Twitter widget script
+        if (source === 'twitter') {
+            const script = document.createElement('script');
+            script.src = 'https://platform.twitter.com/widgets.js';
+            script.async = true;
+            document.body.appendChild(script);
+
+            return () => {
+                document.body.removeChild(script);
+            };
+        }
+        //to dynamically load the GitHub widget script
+        if (source === 'github') {
             // Fetch repository data
             const fetchRepoData = async () => {
                 const repoInfo = parseGithubUrl(link);
@@ -114,25 +126,25 @@ export const Card = ({ title, type, link }: CardProps) => {
 
             fetchRepoData();
         }
-    }, [type, link]);
+    }, [source, link]);
 
     return (
         <>
-            <div className="p-3 flex flex-col justify-center bg-slate-200 rounded-md border-amber-400 shadow-lg max-w-72 min-h-52">
+            <div className="p-3 flex flex-col justify-center bg-slate-200 rounded-md border-amber-400 shadow-2xl max-w-64 min-h-52">
                 <div className="flex items-center justify-between gap-2">
                     <div className="cursor-text font-semibold w-28">
                         <h4 className="truncate">
-                            {type === 'facebook' ? (
+                            {source === 'facebook' ? (
                                 <span className="flex items-center flex-wrap gap-1">
                                     <FacebookIcon />
                                     Facebook
                                 </span>
-                            ) : type === 'youtube' ? (
+                            ) : source === 'youtube' ? (
                                 <span className="flex items-center flex-wrap gap-1">
                                     <YoutubeIcon />
                                     Youtube
                                 </span>
-                            ) : type === 'twitter' ? (
+                            ) : source === 'twitter' ? (
                                 <span className="flex items-center flex-wrap gap-1">
                                     <TwitterIcon />
                                     Twitter
@@ -158,7 +170,7 @@ export const Card = ({ title, type, link }: CardProps) => {
                     <h3 className="truncate">{title}</h3>
                 </div>
                 <div className="mt-2 hover:scale-102 transition-all duration-300 cursor-pointer">
-                    {type === 'youtube' && (
+                    {source === 'youtube' && (
                         <iframe
                             className="w-full h-48"
                             src={link.replace('watch', 'embed').replace('?v=', '/')}
@@ -169,14 +181,14 @@ export const Card = ({ title, type, link }: CardProps) => {
                             allowFullScreen
                         ></iframe>
                     )}
-                    {type === 'twitter' && (
+                    {source === 'twitter' && (
                         <div className="w-full h-48 overflow-hidden p-2">
                             <blockquote className="twitter-tweet">
                                 <a href={link.replace('x', 'twitter')}></a>
                             </blockquote>
                         </div>
                     )}
-                    {type === 'facebook' && (
+                    {source === 'facebook' && (
                         <iframe
                             src={processFacebookUrl(link)}
                             className="w-full h-48"
@@ -187,7 +199,7 @@ export const Card = ({ title, type, link }: CardProps) => {
                             allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                         ></iframe>
                     )}
-                    {type === 'github' && (
+                    {source === 'github' && (
                         <div className="flex flex-col gap-1 p-2 bg-white rounded-md w-full h-48 overflow-y-auto">
                             {loading && (
                                 <div className="flex items-center justify-center h-full">
