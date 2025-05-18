@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../../config/axios.config';
 import { AppLayout } from '../ui/appLayout';
 import { Card } from '../ui/card';
@@ -8,6 +8,12 @@ const Display = () => {
         const response = await api.get('/content/get-all-content');
         return response.data;
     };
+
+    const queryClient = useQueryClient();
+
+    queryClient.invalidateQueries({
+        queryKey: ['allContent'],
+    });
 
     const { isLoading, isError, data, error } = useQuery({
         queryKey: ['allContent'],
