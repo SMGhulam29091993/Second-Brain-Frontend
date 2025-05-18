@@ -27,7 +27,7 @@ export function LoginLayout<T extends object>(WrappedComponent: ComponentType<T>
         };
         return (
             <>
-                <div className="flex flex-col bg-slate-200 dark:bg-slate-800 ">
+                <div className="flex flex-col bg-slate-200 dark:bg-slate-800 w-full">
                     <header className="flex items-center justify-between p-4 text-white bg-slate-100 shadow-2xl dark:bg-slate-600">
                         <div className="flex items-center gap-2 dark:text-slate-100">
                             <BrainIcon />
