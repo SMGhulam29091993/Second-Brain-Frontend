@@ -1,18 +1,52 @@
+import { useQuery } from '@tanstack/react-query';
+import api from '../../config/axios.config';
 import { AppLayout } from '../ui/appLayout';
 import { Card } from '../ui/card';
 
 const Display = () => {
-    let link = 'https://www.youtube.com/watch?v=6t6ZYsLXMWU';
-    let link2 = 'https://x.com/realDonaldTrump/status/1921174163848401313';
-    let link3 = 'https://www.facebook.com/photo/?fbid=3089079827933310&set=a.104999929674663';
-    let link4 = 'https://github.com/SMGhulam29091993/Second-Brain';
-    // let link4 = 'https://github.com/Bharat2044/100xDevs-Cohort3-WebDev-and-Devops';
+    const fetchAllContent = async () => {
+        const response = await api.get('/content/get-all-content');
+        return response.data;
+    };
+
+    const { isLoading, isError, data, error } = useQuery({
+        queryKey: ['allContent'],
+        queryFn: fetchAllContent,
+    });
+
+    if (isLoading) {
+        return <div className="flex flex-col items-center text-lg font-bold">Loading...</div>;
+    }
+
+    if (isError) {
+        console.error('Error fetching data:', error);
+        return <div>Something Went Wrong</div>;
+    }
+
+    const cardData =
+        data?.data?.content.map((card: any) => ({
+            id: card._id,
+            title: card.title,
+            link: card.link,
+            source: card.source,
+        })) || [];
+
     return (
         <>
-            <Card title={'Test Card Youtube'} link={link} type={'youtube'} />
-            <Card title={'Test Card Twitter/X'} link={link2} type={'twitter'} />
-            <Card title={'Test Card Facebook'} link={link3} type={'facebook'} />
-            <Card title={'Test Card Github'} link={link4} type={'github'} />
+            <div className="flex items-center justify-center gap-2 flex-wrap">
+                {cardData.length > 0 ? (
+                    cardData.map((card: any) => (
+                        <Card
+                            key={card.id}
+                            title={card.title}
+                            link={card.link}
+                            source={card.source}
+                        />
+                    ))
+                ) : (
+                    <div>No content available</div>
+                )}
+            </div>
         </>
     );
 };
