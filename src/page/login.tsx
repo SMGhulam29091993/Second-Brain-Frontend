@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '../component/ui/button';
 import { LoginLayout } from '../component/ui/loginLayout';
 import { SubmitIcon } from '../icons/SubmitIcon';
@@ -10,6 +10,11 @@ const LoginPage = () => {
     const [error, setError] = useState<boolean | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        localStorage.removeItem('token');
+    }, []);
+
     const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
         setFormData((prev) => ({ ...prev, [id]: value }));
@@ -20,17 +25,17 @@ const LoginPage = () => {
         setLoading(true);
         setError(false);
         if (resp.status === 200) {
-            setLoading(false);
+            setTimeout(() => setLoading(false), 1000);
             setError(false);
-            localStorage.setItem('token', resp.data.token);
-            navigate('/dashboard');
+            localStorage.setItem('token', resp.data.data.token);
         }
+        setTimeout(() => navigate('/dashboard'), 500);
 
         return;
     };
     return (
         <>
-            <div className="my-14 flex flex-col items-center bg-slate-200 dark:bg-slate-600 rounded-lg p-4 shadow-xl w-xl min-h-60 gap-4 text-black dark:text-slate-100">
+            <div className="my-14 flex flex-col items-center bg-slate-200 dark:bg-slate-600 rounded-lg p-4 shadow-xl w-72 md:w-xl gap-4 text-black dark:text-slate-100">
                 <h2 className="text-2xl font-medium">LOGIN</h2>
                 <input
                     type="email"
