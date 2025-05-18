@@ -33,7 +33,7 @@ export const Header: React.FC<HeaderProps> = ({ setOpen }) => {
     };
 
     return (
-        <div className="flex items-center justify-between p-4 text-white">
+        <div className="flex items-center justify-between p-4 text-white bg-slate-200 shadow-2xl dark:bg-slate-600 ">
             <div className="flex items-center gap-2 dark:text-slate-100">
                 <BrainIcon />
                 <h2 className="md:text-2xl font-bold text-slate-900 dark:text-slate-100">
