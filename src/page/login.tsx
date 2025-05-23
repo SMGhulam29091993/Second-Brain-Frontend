@@ -4,12 +4,15 @@ import { LoginLayout } from '../component/ui/loginLayout';
 import { SubmitIcon } from '../icons/SubmitIcon';
 import api from '../config/axios.config';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
 
 const LoginPage = () => {
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [error, setError] = useState<boolean | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const navigate = useNavigate();
+
+    const setToken = useAuthStore((state) => state.setToken);
 
     useEffect(() => {
         localStorage.removeItem('token');
@@ -28,6 +31,7 @@ const LoginPage = () => {
             setTimeout(() => setLoading(false), 1000);
             setError(false);
             localStorage.setItem('token', resp.data.data.token);
+            setToken(resp.data.data.token);
         }
         setTimeout(() => navigate('/dashboard'), 500);
 
