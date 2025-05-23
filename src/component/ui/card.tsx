@@ -98,7 +98,7 @@ export const Card = ({ title, source, link }: CardProps) => {
             };
         }
         //to dynamically load the GitHub widget script
-        if (source === 'github') {
+        if (source === 'github' && link) {
             // Fetch repository data
             const fetchRepoData = async () => {
                 const repoInfo = parseGithubUrl(link);
@@ -200,7 +200,7 @@ export const Card = ({ title, source, link }: CardProps) => {
                         ></iframe>
                     )}
                     {source === 'github' && (
-                        <div className="flex flex-col gap-1 p-2 bg-white rounded-md w-full h-48 overflow-y-auto">
+                        <div className="flex flex-col gap-1 p-2 bg-white rounded-md w-full h-48 overflow-y-auto ">
                             {loading && (
                                 <div className="flex items-center justify-center h-full">
                                     <div className="text-xs">Loading repository data...</div>
@@ -299,7 +299,7 @@ export const Card = ({ title, source, link }: CardProps) => {
                                     <div className="flex justify-between items-center mt-2">
                                         <div className="scale-75 origin-left">
                                             <a
-                                                className="github-button"
+                                                className="github-button z-10"
                                                 href={`https://github.com/${repoData.owner.login}/${repoData.name}`}
                                                 data-icon="octicon-star"
                                                 data-size="small"
