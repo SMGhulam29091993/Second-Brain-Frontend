@@ -1,9 +1,10 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import { useAuthStore } from '../store/authStore';
 
 const apiUrl: string = import.meta.env.VITE_BASE_URL;
 console.log('API URL:', apiUrl);
 
-const getToken = () => localStorage.getItem('token');
+// const getToken = () => localStorage.getItem('token');
 
 const api: AxiosInstance = axios.create({
     baseURL: apiUrl,
@@ -17,7 +18,7 @@ const api: AxiosInstance = axios.create({
 // Add token to every request
 api.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-        const token = getToken();
+        const token = useAuthStore.getState().token;
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -51,6 +52,10 @@ api.interceptors.response.use(
             JSON.stringify(error.response.data).includes('TokenExpiredError');
 
         if (is401or403 || is500TokenExpired) {
+            console.log('Token expired or unauthorized, attempting to refresh token...');
+
+            const setToken = useAuthStore.getState().setToken;
+            const clearToken = useAuthStore.getState().clearToken;
             // Mark this request as retried
             (originalRequest as any)._retry = true;
 
@@ -64,8 +69,8 @@ api.interceptors.response.use(
                 if (refreshResponse.data?.data?.token) {
                     const newToken = refreshResponse.data.data.token;
 
-                    // Store the new token
-                    localStorage.setItem('token', newToken);
+                    setToken(newToken);
+                    console.log('Token refreshed successfully : ', newToken);
 
                     // Update default headers for future requests
                     api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
@@ -79,8 +84,9 @@ api.interceptors.response.use(
 
                 return Promise.reject(error);
             } catch (refreshError) {
-                // If refresh token fails, clear token and possibly redirect
-                localStorage.removeItem('token');
+                // If refresh token fails, clear token and possibly redirect to login
+                clearToken();
+                console.error('Failed to refresh token:', refreshError);
 
                 // Optionally redirect to login page
                 // window.location.href = '/login';
