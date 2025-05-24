@@ -13,17 +13,26 @@ function App() {
     return (
         <div className="bg-slate-100 dark:bg-black">
             <BrowserRouter>
-                <Suspense fallback={<div>Loading...</div>}>
+                <Suspense fallback={<div className="dark:text-white text-black">Loading...</div>}>
                     <Routes>
-                        <Route path="/" element={<LoginPage />} />
                         {/* Protected Routes */}
                         <Route element={<PrivateRoute token={token} redirect="/login" />}>
                             <Route path="/dashboard" element={<Display />} />
                         </Route>
-                        {/* Catch-All Route or Redirect */}
+
+                        {/* Redirect from root to login */}
+                        {/* <Route
+                            path="/*"
+                            element={
+                                <PrivateRoute token={!token} redirect="/dashboard">
+                                    <LoginPage />
+                                </PrivateRoute>
+                            }
+                        /> */}
+
                         <Route
-                            path="*"
-                            element={<Navigate to={token ? '/dashboard' : '/login'} />}
+                            path="/*"
+                            element={!token ? <LoginPage /> : <Navigate to="/dashboard" />}
                         />
                     </Routes>
                 </Suspense>
