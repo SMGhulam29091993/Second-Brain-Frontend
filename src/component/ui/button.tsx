@@ -13,6 +13,7 @@ interface ButtonProps {
     startIcon?: ReactElement;
     endIcon?: ReactElement;
     fullWidth?: boolean;
+    disabled?: boolean;
 }
 
 const variantStyles: Record<Variants, string> = {
@@ -27,7 +28,7 @@ const sizeStyles: Record<Sizes, string> = {
 };
 
 const defaultStyles =
-    'rounded-md flex items-center justify-center font-semibold focus:outline-none  transition disabled:opacity-50 cursor-pointer';
+    'rounded-md flex items-center justify-center font-semibold focus:outline-none  transition disabled:opacity-50';
 
 export const Button = ({
     variants,
@@ -38,17 +39,19 @@ export const Button = ({
     startIcon,
     endIcon,
     fullWidth = false,
+    disabled = false,
 }: ButtonProps) => {
     return (
         <button
             onClick={onClick}
-            disabled={loading}
+            disabled={loading || disabled}
             className={`
         ${variantStyles[variants]}
         ${sizeStyles[size]}
         ${defaultStyles}
         ${fullWidth ? 'w-full' : ''}
-        ${loading ? 'opacity-60 cursor-not-allowed' : ''}
+        ${loading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}
+        ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
       `}
         >
             {loading ? (
