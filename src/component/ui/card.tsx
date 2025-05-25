@@ -5,8 +5,11 @@ import { YoutubeIcon } from '../../icons/YoutubeIcons';
 import { FacebookIcon } from '../../icons/FacebookIcon';
 import { TwitterIcon } from '../../icons/TwitterIcon';
 import { GithubIcon } from '../../icons/GithubIcon';
+import api from '../../config/axios.config';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface CardProps {
+    id: string;
     title: string;
     source: 'youtube' | 'facebook' | 'twitter' | 'github';
     link: string;
@@ -26,7 +29,8 @@ interface GithubRepo {
     updated_at: string;
 }
 
-export const Card = ({ title, source, link }: CardProps) => {
+export const Card = ({ id, title, source, link }: CardProps) => {
+    const queryClient = useQueryClient();
     const [repoData, setRepoData] = useState<GithubRepo | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -128,6 +132,22 @@ export const Card = ({ title, source, link }: CardProps) => {
         }
     }, [source, link]);
 
+    const handleDelete = async () => {
+        let body = {
+            contentId: id,
+        };
+        const deleteContent = await api.delete(`/content/delete-content`, { data: body });
+        if (deleteContent.status === 200) {
+            // Optionally, you can add a success message or refresh the content list
+            console.log('Content deleted successfully');
+
+            await queryClient.invalidateQueries({
+                queryKey: ['allContent'],
+            });
+        }
+        return;
+    };
+
     return (
         <>
             <div className="p-3 flex flex-col justify-center bg-slate-200 rounded-md border-amber-400 shadow-2xl max-w-64 min-h-52">
@@ -158,10 +178,14 @@ export const Card = ({ title, source, link }: CardProps) => {
                         </h4>
                     </div>
                     <div className="flex items-center gap-1 cursor-pointer">
-                        <span className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300">
-                            <ShareIcon />
-                        </span>
-                        <span className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300">
+                        {/* will be individual share in future after implementing ai agent */}
+                        {/* <span className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"> */}
+                        {/* <ShareIcon />
+                        </span> */}
+                        <span
+                            className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"
+                            onClick={handleDelete}
+                        >
                             <DeleteIcon />
                         </span>
                     </div>

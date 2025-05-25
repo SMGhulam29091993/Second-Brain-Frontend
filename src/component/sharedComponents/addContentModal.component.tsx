@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import api from '../../config/axios.config';
 import { CloseIcon } from '../../icons/CloseIcon';
@@ -26,6 +27,7 @@ export enum ContentSource {
 }
 
 export const AddContentModal: React.FC<AddContentModalProps> = ({ open, onClose }) => {
+    const queryClient = useQueryClient();
     const [contentData, setContentData] = useState({});
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -41,6 +43,7 @@ export const AddContentModal: React.FC<AddContentModalProps> = ({ open, onClose 
             setTimeout(() => {
                 setIsLoading(false);
                 setContentData({});
+                queryClient.invalidateQueries({ queryKey: ['allContent'] });
                 onClose();
             }, 1000);
         }
