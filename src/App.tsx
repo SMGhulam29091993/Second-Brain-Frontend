@@ -5,6 +5,7 @@ import { useAuthStore } from './store/authStore';
 
 const Display = lazy(() => import('./component/sharedComponents/display.component'));
 const LoginPage = lazy(() => import('./page/login'));
+const RegisterPage = lazy(() => import('./page/signup'));
 
 function App() {
     const token = useAuthStore((state) => state.token);
@@ -32,6 +33,10 @@ function App() {
                         <Route
                             path="/*"
                             element={!token ? <LoginPage /> : <Navigate to="/dashboard" />}
+                        />
+                        <Route
+                            path="/register"
+                            element={!token ? <RegisterPage /> : <Navigate to="/dashboard" />}
                         />
                     </Routes>
                 </Suspense>
