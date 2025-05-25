@@ -1,16 +1,46 @@
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
+import api from '../../config/axios.config';
 import { BrainIcon } from '../../icons/BrainIcon';
+import { LogoutIcon } from '../../icons/LogoutIcon';
 import { MoonIcon } from '../../icons/MoonIcon';
 import { PlusIcon } from '../../icons/PlusIcons';
 import { ShareIcon } from '../../icons/ShareIcons';
 import { SunIcon } from '../../icons/SunIcon';
+import { useSourceStore } from '../../store/sourceStore';
 import { Button } from '../ui/button';
 
 interface HeaderProps {
     setOpen: (open: boolean) => void;
 }
 
+export interface ContentDto {
+    link: string;
+    type: 'video' | 'image' | 'audio' | 'article' | 'repository';
+    title: string;
+    tags: string[]; // Array of tag IDs (validated as ObjectId in Zod)
+    userId: string; // User ID (validated as ObjectId in Zod)
+    source: 'youtube' | 'twitter' | 'facebook' | 'github';
+    createdAt?: Date;
+    updatedAt?: Date;
+    _id?: string;
+    __v?: number;
+}
+
+interface SourceDto {
+    _id: string;
+    name: string;
+    createdAt: Date;
+    updatedAt: Date;
+    __v: number;
+}
+
 export const Header: React.FC<HeaderProps> = ({ setOpen }) => {
+    const [source, setSource] = useState<string>(''); // Default source
+    const [sourceArray, setSourceArray] = useState<SourceDto[]>([]); // State to hold sources
+
+    const setSourceStore = useSourceStore((state) => state.setSource);
+
     // Check for theme in local storage and set it on the html element
     useEffect(() => {
         const theme = localStorage.getItem('theme');
@@ -32,6 +62,37 @@ export const Header: React.FC<HeaderProps> = ({ setOpen }) => {
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
     };
 
+    // Function to fetch all content sources from the API
+    const fetchAllContentSources = async () => {
+        const response = await api.get('/content/get-all-sources');
+        return response.data;
+    };
+
+    // Fetch all content sources and invalidate the query to refresh the data
+    const queryClient = useQueryClient();
+    queryClient.invalidateQueries({
+        queryKey: ['allSource'],
+    });
+
+    const { data: allSourceData } = useQuery({
+        queryKey: ['allSource'],
+        queryFn: fetchAllContentSources,
+    });
+
+    // Effect to set the source array from fetched data
+    useEffect(() => {
+        if (allSourceData && allSourceData.data) {
+            setSourceArray(allSourceData.data || []); // Set sources from fetched data
+        }
+        return () => {
+            setSourceArray([]); // Clear sources on unmount
+        };
+    }, [allSourceData]);
+
+    useEffect(() => {
+        setSourceStore(source); // Always update the store, even if empty string
+    }, [source, setSourceStore]);
+
     return (
         <div className="flex items-center justify-between p-4 text-white bg-slate-200 shadow-2xl dark:bg-slate-600 ">
             <div className="flex items-center gap-2 dark:text-slate-100">
@@ -52,15 +113,13 @@ export const Header: React.FC<HeaderProps> = ({ setOpen }) => {
                 </div>
             </div>
             <div className="flex items-center gap-2">
-                <span>
-                    <Button
-                        variants="secondary"
-                        text="Share"
-                        startIcon={<ShareIcon />}
-                        size="md"
-                        onClick={() => console.log('Share')}
-                    />
-                </span>
+                <Button
+                    variants="secondary"
+                    text="Share"
+                    startIcon={<ShareIcon />}
+                    size="md"
+                    onClick={() => console.log('Share')}
+                />
                 <Button
                     variants="primary"
                     text="Add Content"
@@ -68,6 +127,30 @@ export const Header: React.FC<HeaderProps> = ({ setOpen }) => {
                     size="md"
                     onClick={() => setOpen(true)}
                 />
+                <Button
+                    variants="secondary"
+                    size="md"
+                    text="Logout"
+                    startIcon={<LogoutIcon />}
+                    onClick={() => console.log('Logout clicked')}
+                />
+                <select
+                    id="source"
+                    className="bg-slate-700 border border-slate-400 rounded-md p-2 capitalize"
+                    value={source}
+                    onChange={(e) => setSource((e.target as HTMLSelectElement).value || '')}
+                >
+                    <option value="">Default</option>
+                    {sourceArray.map((source) => (
+                        <option
+                            key={source._id}
+                            value={source.name}
+                            className="capitalize dark:bg-black dark:text-white bg-slate-700 text-white"
+                        >
+                            {source.name}
+                        </option>
+                    ))}
+                </select>
             </div>
         </div>
     );
