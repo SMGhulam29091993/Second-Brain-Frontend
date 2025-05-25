@@ -16,6 +16,7 @@ export enum ContentType {
     AUDIO = 'audio',
     Article = 'article',
     NONE = 'none',
+    REPOSITORY = 'repository',
 }
 
 export enum ContentSource {
@@ -82,6 +83,7 @@ export const AddContentModal: React.FC<AddContentModalProps> = ({ open, onClose 
                                         <option value={ContentType.IMAGE}>Image</option>
                                         <option value={ContentType.AUDIO}>Audio</option>
                                         <option value={ContentType.Article}>Article</option>
+                                        <option value={ContentType.REPOSITORY}>Repository</option>
                                     </select>
                                     <select
                                         id="source"
