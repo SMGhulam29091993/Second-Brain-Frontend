@@ -1,12 +1,12 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import api from '../../config/axios.config';
-import { AppLayout } from '../ui/appLayout';
-import { Card } from '../ui/card';
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { useSourceStore } from '../../store/sourceStore';
-import { Button } from '../ui/button';
-import { PreviousIcon } from '../../icons/PreviousIcon';
+import api from '../../config/axios.config';
 import { NextIcon } from '../../icons/NextIcon';
+import { PreviousIcon } from '../../icons/PreviousIcon';
+import { useSourceStore } from '../../store/sourceStore';
+import { AppLayout } from '../ui/appLayout';
+import { Button } from '../ui/button';
+import { Card } from '../ui/card';
 
 const Display = () => {
     const [source, setSource] = useState<string>(''); // Default source
@@ -27,11 +27,6 @@ const Display = () => {
         const response = await api.get(`/content/get-all-content?${queryParams.toString()}`);
         return response.data;
     };
-
-    const queryClient = useQueryClient();
-    queryClient.invalidateQueries({
-        queryKey: ['allContent'],
-    });
 
     const { isLoading, isError, data, error } = useQuery({
         queryKey: ['allContent', source, pageNumber, pageSize],
@@ -70,6 +65,7 @@ const Display = () => {
                         cardData.map((card: any) => (
                             <Card
                                 key={card.id}
+                                id={card.id}
                                 title={card.title}
                                 link={card.link}
                                 source={card.source}
@@ -81,7 +77,7 @@ const Display = () => {
                 </div>
 
                 {/* Pagination */}
-                <div className="mt-3 flex justify-center items-center gap-3 fixed bottom-2 left-1/2 transform -translate-x-1/2">
+                <div className=" mt-3 flex justify-center items-center gap-3 fixed bottom-2 left-1/2 transform -translate-x-1/2">
                     <Button
                         size="sm"
                         text="Prev"
@@ -90,7 +86,7 @@ const Display = () => {
                         onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
                         disabled={pageNumber === 1 ? true : false}
                     />
-                    <span className=' className="text-lg font-semibold dark:text-white text-black"'>
+                    <span className="text-lg font-semibold dark:text-slate-500 text-black">
                         Page {pageNumber} of {totalPages}
                     </span>
                     <Button
