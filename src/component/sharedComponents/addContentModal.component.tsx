@@ -34,8 +34,6 @@ export const AddContentModal: React.FC<AddContentModalProps> = ({ open, onClose 
     };
 
     const handleSubmit = async () => {
-        console.log('Submit', contentData);
-
         const res = await api.post('/content/add-content', contentData);
         setIsLoading(true);
         if (res.status === 200 || res.status === 201) {
