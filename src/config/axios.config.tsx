@@ -70,7 +70,7 @@ api.interceptors.response.use(
                     const newToken = refreshResponse.data.data.token;
 
                     setToken(newToken);
-                    console.log('Token refreshed successfully : ', newToken);
+                    console.log('Token refreshed successfully');
 
                     // Update default headers for future requests
                     api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
