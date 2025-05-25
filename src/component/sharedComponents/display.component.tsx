@@ -72,7 +72,7 @@ const Display = () => {
                             />
                         ))
                     ) : (
-                        <div>No content available</div>
+                        <div className="dark:text-white text-black">No content available</div>
                     )}
                 </div>
 
