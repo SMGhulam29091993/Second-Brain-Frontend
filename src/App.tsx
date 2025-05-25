@@ -8,7 +8,6 @@ const LoginPage = lazy(() => import('./page/login'));
 
 function App() {
     const token = useAuthStore((state) => state.token);
-    console.log('Token:', token);
 
     return (
         <div className="bg-slate-100 dark:bg-black">
