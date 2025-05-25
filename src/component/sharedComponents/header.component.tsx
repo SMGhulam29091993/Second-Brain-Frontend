@@ -89,6 +89,7 @@ export const Header: React.FC<HeaderProps> = ({ setOpen }) => {
         };
     }, [allSourceData]);
 
+    // Effect to set the source from the store or default to empty string
     useEffect(() => {
         setSourceStore(source); // Always update the store, even if empty string
     }, [source, setSourceStore]);
@@ -140,7 +141,7 @@ export const Header: React.FC<HeaderProps> = ({ setOpen }) => {
                     value={source}
                     onChange={(e) => setSource((e.target as HTMLSelectElement).value || '')}
                 >
-                    <option value="">Default</option>
+                    <option value="">All Content</option>
                     {sourceArray.map((source) => (
                         <option
                             key={source._id}
