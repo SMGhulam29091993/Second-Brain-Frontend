@@ -28,9 +28,9 @@ const LoginPage = () => {
         setLoading(true);
         setError(false);
         if (resp.status === 200) {
-            setTimeout(() => setLoading(false), 1000);
+            setTimeout(() => setLoading(false), 1500);
             setError(false);
-            localStorage.setItem('token', resp.data.data.token);
+            // localStorage.setItem('token', resp.data.data.token);
             setToken(resp.data.data.token);
         }
         setTimeout(() => navigate('/dashboard'), 500);
