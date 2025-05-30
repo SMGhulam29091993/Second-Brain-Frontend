@@ -113,6 +113,7 @@ export const AddContentModal: React.FC<AddContentModalProps> = ({ open, onClose 
                                     startIcon={<SubmitIcon />}
                                     onClick={handleSubmit}
                                     loading={isLoading}
+                                    fullWidth={true}
                                 />
                             </div>
                         </span>
