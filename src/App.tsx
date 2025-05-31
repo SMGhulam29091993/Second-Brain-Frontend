@@ -6,6 +6,7 @@ import { useAuthStore } from './store/authStore';
 const Display = lazy(() => import('./component/sharedComponents/display.component'));
 const LoginPage = lazy(() => import('./page/login'));
 const RegisterPage = lazy(() => import('./page/signup'));
+const SharedBrain = lazy(() => import('./component/sharedComponents/sharedBrain.component'));
 
 function App() {
     const token = useAuthStore((state) => state.token);
@@ -19,16 +20,8 @@ function App() {
                         <Route element={<PrivateRoute token={token} redirect="/login" />}>
                             <Route path="/dashboard" element={<Display />} />
                         </Route>
-
-                        {/* Redirect from root to login */}
-                        {/* <Route
-                            path="/*"
-                            element={
-                                <PrivateRoute token={!token} redirect="/dashboard">
-                                    <LoginPage />
-                                </PrivateRoute>
-                            }
-                        /> */}
+                        {/* Public Routes */}
+                        <Route path="/brain/:hashCode" element={<SharedBrain />} />
 
                         <Route
                             path="/*"
