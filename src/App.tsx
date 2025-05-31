@@ -7,6 +7,7 @@ const Display = lazy(() => import('./component/sharedComponents/display.componen
 const LoginPage = lazy(() => import('./page/login'));
 const RegisterPage = lazy(() => import('./page/signup'));
 const SharedBrain = lazy(() => import('./component/sharedComponents/sharedBrain.component'));
+const VerificationPage = lazy(() => import('./page/otpVerification'));
 
 function App() {
     const token = useAuthStore((state) => state.token);
@@ -24,12 +25,16 @@ function App() {
                         <Route path="/brain/:hashCode" element={<SharedBrain />} />
 
                         <Route
-                            path="/*"
+                            path="/login"
                             element={!token ? <LoginPage /> : <Navigate to="/dashboard" />}
                         />
                         <Route
                             path="/register"
                             element={!token ? <RegisterPage /> : <Navigate to="/dashboard" />}
+                        />
+                        <Route
+                            path="/verify-email/:hashCode"
+                            element={!token ? <VerificationPage /> : <Navigate to="/dashboard" />}
                         />
                     </Routes>
                 </Suspense>
