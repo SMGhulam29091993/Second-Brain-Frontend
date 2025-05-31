@@ -14,9 +14,9 @@ const LoginPage = () => {
 
     const setToken = useAuthStore((state) => state.setToken);
 
-    useEffect(() => {
-        localStorage.removeItem('token');
-    }, []);
+    // useEffect(() => {
+    //     localStorage.removeItem('token');
+    // }, []);
 
     const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -31,6 +31,16 @@ const LoginPage = () => {
             setTimeout(() => setLoading(false), 1500);
             setError(false);
             // localStorage.setItem('token', resp.data.data.token);
+            console.log('Login successful:', resp.data.data);
+            const token = resp.data.data.token;
+            if (!token) {
+                const hashCode = resp.data.data;
+                console.log('Hash code:', hashCode);
+                navigate(`/verify-email/${encodeURIComponent(hashCode)}`);
+                setLoading(false);
+                return;
+            }
+
             setToken(resp.data.data.token);
         }
         setTimeout(() => navigate('/dashboard'), 500);
@@ -64,6 +74,15 @@ const LoginPage = () => {
                     loading={loading}
                     onClick={handleSubmit}
                 />
+                <p className="font-light">
+                    New here?{' '}
+                    <span
+                        className="text-blue-500 font-medium cursor-pointer"
+                        onClick={() => navigate('/register')}
+                    >
+                        Register Here...
+                    </span>
+                </p>
             </div>
         </>
     );
