@@ -7,12 +7,12 @@ export function AppLayout<T extends object>(WrappedComponent: ComponentType<T>) 
         const [open, setOpen] = useState<boolean>(false);
 
         return (
-            <div className="flex flex-col p-0">
-                <Header setOpen={setOpen} />
+            <div className="flex flex-col">
+                <Header />
                 <AddContentModal open={open} onClose={() => setOpen(false)} />
-                <div className="flex flex-col gap-2" style={{ height: 'calc(100vh - 4.5rem)' }}>
+                <div className="flex flex-col gap-2" style={{ height: 'calc(100vh - 4.55rem)' }}>
                     <div className="flex items-center justify-center flex-wrap gap-2 p-3 w-full h-full overflow-auto">
-                        <WrappedComponent {...props} />
+                        <WrappedComponent {...props} setOpen={setOpen} />
                     </div>
                 </div>
             </div>
