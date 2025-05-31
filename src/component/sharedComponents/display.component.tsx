@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { use, useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import api from '../../config/axios.config';
 import { NextIcon } from '../../icons/NextIcon';
 import { PreviousIcon } from '../../icons/PreviousIcon';
@@ -7,8 +7,15 @@ import { useSourceStore } from '../../store/sourceStore';
 import { AppLayout } from '../ui/appLayout';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
+import { ShareIcon } from '../../icons/ShareIcons';
+import { PlusIcon } from '../../icons/PlusIcons';
+import { LogoutIcon } from '../../icons/LogoutIcon';
 
-const Display = () => {
+interface HedaerProps {
+    setOpen: (open: boolean) => void;
+}
+
+const Display: React.FC<HedaerProps> = ({ setOpen }) => {
     const [source, setSource] = useState<string>(''); // Default source
     const [pageNumber, setPageNumber] = useState<number>(1); // Default page number
     const pageSize = 10; // Default page size
@@ -16,6 +23,58 @@ const Display = () => {
 
     const getSourceFromStore = useSourceStore((state) => state.source);
 
+    // Add state for loading
+    const [isCreatingShareLink, setIsCreatingShareLink] = useState<boolean>(false);
+
+    const createShareLink = async () => {
+        setIsCreatingShareLink(true);
+
+        try {
+            const resp = await api.post(`/link/brain-link`, { shareBrain: true });
+
+            if (resp.data && resp.data.data && resp.data.data.link) {
+                const shareLink = resp.data.data.link;
+                console.log('Share link created:', shareLink);
+
+                // Copy the link to clipboard
+                await navigator.clipboard.writeText(shareLink);
+                alert('Share link copied to clipboard! : ' + shareLink);
+            } else {
+                throw new Error('Invalid response format');
+            }
+        } catch (error: any) {
+            console.error('Error creating share link:', error);
+
+            let errorMessage = 'Failed to create share link. ';
+
+            if (error.response) {
+                // Server responded with error status
+                switch (error.response.status) {
+                    case 500:
+                        errorMessage += 'Server error. Please try again later.';
+                        break;
+                    case 401:
+                        errorMessage += 'Please log in again.';
+                        break;
+                    case 403:
+                        errorMessage += "You don't have permission to create share links.";
+                        break;
+                    default:
+                        errorMessage += `Server error (${error.response.status}).`;
+                }
+            } else if (error.request) {
+                // Network error
+                errorMessage += 'Network error. Please check your connection.';
+            } else {
+                // Other error
+                errorMessage += error.message || 'Unknown error occurred.';
+            }
+        } finally {
+            setIsCreatingShareLink(false);
+        }
+    };
+
+    // Effect to update source from store when it changes
     useEffect(() => {
         const newSource = getSourceFromStore || '';
         if (newSource !== source) {
@@ -24,6 +83,7 @@ const Display = () => {
         }
     }, [getSourceFromStore, source]);
 
+    // Function to fetch all content based on source, pageNumber, and pageSize
     const fetchAllContent = async () => {
         const queryParams = new URLSearchParams();
         if (source) queryParams.append('source', source);
@@ -34,11 +94,13 @@ const Display = () => {
         return response.data;
     };
 
+    // Use React Query to fetch data
     const { isLoading, isError, data, error } = useQuery({
         queryKey: ['allContent', source, pageNumber, pageSize],
         queryFn: fetchAllContent,
     });
 
+    // Effect to update total count when data changes
     useEffect(() => {
         setTotalCount(data?.data?.count || 0); // Update total count when data changes
     }, [source, pageNumber]);
@@ -56,7 +118,6 @@ const Display = () => {
         return <div>Something Went Wrong</div>;
     }
 
-    // let totalCount = data?.data?.count || 0;
     let totalPages = Math.ceil(totalCount / pageSize);
 
     const cardData =
@@ -70,6 +131,31 @@ const Display = () => {
     return (
         <>
             <div className="flex flex-col items-center justify-center gap-3">
+                <div className="fixed top-20 right-3 z-40">
+                    <div className="flex flex-col flex-wrap md:flex-row  items-center gap-2">
+                        <Button
+                            variants="secondary"
+                            text={isCreatingShareLink ? 'Creating...' : 'Share'}
+                            startIcon={<ShareIcon />}
+                            size="md"
+                            onClick={createShareLink}
+                        />
+                        <Button
+                            variants="primary"
+                            text="Add Content"
+                            startIcon={<PlusIcon />}
+                            size="md"
+                            onClick={() => setOpen(true)}
+                        />
+                        <Button
+                            variants="secondary"
+                            size="md"
+                            text="Logout"
+                            startIcon={<LogoutIcon />}
+                            onClick={() => console.log('Logout clicked')}
+                        />
+                    </div>
+                </div>
                 <div className="flex items-center justify-center gap-2 flex-wrap">
                     {cardData.length > 0 ? (
                         cardData.map((card: any) => (
@@ -85,10 +171,9 @@ const Display = () => {
                         <div className="dark:text-white text-black">No content available</div>
                     )}
                 </div>
-
                 {/* Pagination */}
                 {cardData.length > 0 && totalPages > 1 && (
-                    <div className=" mt-3 flex justify-center items-center gap-3 fixed bottom-2 left-1/2 transform -translate-x-1/2">
+                    <div className="mt-3 flex justify-center items-center gap-3 fixed bottom-2 left-1/2 transform -translate-x-1/2 z-40">
                         <Button
                             size="sm"
                             text="Prev"
@@ -97,7 +182,7 @@ const Display = () => {
                             onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
                             disabled={pageNumber === 1 ? true : false}
                         />
-                        <span className="text-lg font-semibold dark:text-slate-500 text-black">
+                        <span className="text-sm md:text-lg font-semibold dark:text-slate-500 text-black">
                             Page {pageNumber} of {totalPages}
                         </span>
                         <Button
