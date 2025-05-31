@@ -1,18 +1,10 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import api from '../../config/axios.config';
 import { BrainIcon } from '../../icons/BrainIcon';
-import { LogoutIcon } from '../../icons/LogoutIcon';
 import { MoonIcon } from '../../icons/MoonIcon';
-import { PlusIcon } from '../../icons/PlusIcons';
-import { ShareIcon } from '../../icons/ShareIcons';
 import { SunIcon } from '../../icons/SunIcon';
 import { useSourceStore } from '../../store/sourceStore';
-import { Button } from '../ui/button';
-
-interface HeaderProps {
-    setOpen: (open: boolean) => void;
-}
 
 export interface ContentDto {
     link: string;
@@ -35,7 +27,7 @@ interface SourceDto {
     __v: number;
 }
 
-export const Header: React.FC<HeaderProps> = ({ setOpen }) => {
+export const Header = () => {
     const [source, setSource] = useState<string>(''); // Default source
     const [sourceArray, setSourceArray] = useState<SourceDto[]>([]); // State to hold sources
 
