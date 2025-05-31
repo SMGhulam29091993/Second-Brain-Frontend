@@ -53,11 +53,11 @@ export const AddContentModal: React.FC<AddContentModalProps> = ({ open, onClose 
     return (
         <>
             {open && (
-                <div className="fixed w-screen h-screen top-0 left-0 flex justify-center">
+                <div className="fixed w-screen h-screen top-0 left-0 flex justify-center z-[9999]">
                     {/* Background Overlay */}
-                    <div className="absolute w-full h-full bg-black opacity-85 z-10"></div>
+                    <div className="absolute w-full h-full bg-black opacity-85"></div>
 
-                    <div className="relative flex flex-col justify-center max-w-lg mx-auto z-20">
+                    <div className="relative flex flex-col justify-center max-w-lg mx-auto">
                         <span className="bg-white p-4 rounded-md shadow-lg">
                             <div className="flex justify-end mb-2">
                                 <div className="cursor-pointer" onClick={onClose}>
