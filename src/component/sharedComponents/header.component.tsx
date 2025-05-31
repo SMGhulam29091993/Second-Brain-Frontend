@@ -114,27 +114,6 @@ export const Header: React.FC<HeaderProps> = ({ setOpen }) => {
                 </div>
             </div>
             <div className="flex items-center gap-2">
-                <Button
-                    variants="secondary"
-                    text="Share"
-                    startIcon={<ShareIcon />}
-                    size="md"
-                    onClick={() => console.log('Share')}
-                />
-                <Button
-                    variants="primary"
-                    text="Add Content"
-                    startIcon={<PlusIcon />}
-                    size="md"
-                    onClick={() => setOpen(true)}
-                />
-                <Button
-                    variants="secondary"
-                    size="md"
-                    text="Logout"
-                    startIcon={<LogoutIcon />}
-                    onClick={() => console.log('Logout clicked')}
-                />
                 <select
                     id="source"
                     className="bg-slate-700 border border-slate-400 rounded-md p-2 capitalize"
