@@ -49,7 +49,7 @@ const LoginPage = () => {
     };
     return (
         <>
-            <div className="my-14 flex flex-col items-center bg-slate-200 dark:bg-slate-600 rounded-lg p-4 shadow-xl w-72 md:w-xl gap-4 text-black dark:text-slate-100">
+            <div className="my-14 flex flex-col items-center bg-slate-200 dark:bg-slate-600 rounded-lg p-4 shadow-xl min-w-72 md:w-xl gap-4 text-black dark:text-slate-100">
                 <h2 className="text-2xl font-medium">LOGIN</h2>
                 <input
                     type="email"
@@ -74,15 +74,18 @@ const LoginPage = () => {
                     loading={loading}
                     onClick={handleSubmit}
                 />
-                <p className="font-light">
-                    New here?{' '}
-                    <span
-                        className="text-blue-500 font-medium cursor-pointer"
-                        onClick={() => navigate('/register')}
-                    >
-                        Register Here...
-                    </span>
-                </p>
+                <div className="w-full flex items-center justify-between gap-2 sm:text-xs md:text-md">
+                    <p className="w-1/2 font-light flex flex-wrap">
+                        New here?{' '}
+                        <span
+                            className="text-blue-500 font-medium cursor-pointer"
+                            onClick={() => navigate('/register')}
+                        >
+                            Register Here...
+                        </span>
+                    </p>
+                    <p className="">Forgot Password?</p>
+                </div>
             </div>
         </>
     );

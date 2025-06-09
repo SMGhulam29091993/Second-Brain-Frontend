@@ -89,7 +89,7 @@ const RegisterPage = () => {
     return (
         <>
             <div className="my-14 flex flex-col items-center bg-slate-200 dark:bg-slate-600 rounded-lg p-4 shadow-xl w-72 md:w-xl gap-4 text-black dark:text-slate-100">
-                <h2 className="text-2xl font-medium">LOGIN</h2>
+                <h2 className="text-2xl font-medium">REGISTER</h2>
                 <input
                     type="text"
                     id="username"
@@ -120,6 +120,17 @@ const RegisterPage = () => {
                     // loading={loading}
                     onClick={handleSubmit}
                 />
+                <div className="flex flex-row items-start">
+                    <p className="font-light">
+                        Already registered?{' '}
+                        <span
+                            className="text-blue-500 font-medium cursor-pointer"
+                            onClick={() => navigate('/login')}
+                        >
+                            Login Here...
+                        </span>
+                    </p>
+                </div>
             </div>
         </>
     );
