@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import React, { use, useEffect, useState } from 'react';
+import React, { use, useEffect, useRef, useState } from 'react';
 import api from '../../config/axios.config';
 import { NextIcon } from '../../icons/NextIcon';
 import { PreviousIcon } from '../../icons/PreviousIcon';
@@ -10,6 +10,7 @@ import { Card } from '../ui/card';
 import { ShareIcon } from '../../icons/ShareIcons';
 import { PlusIcon } from '../../icons/PlusIcons';
 import { LogoutIcon } from '../../icons/LogoutIcon';
+import { useAuthStore } from '../../store/authStore';
 
 interface HedaerProps {
     setOpen: (open: boolean) => void;
@@ -22,6 +23,7 @@ const Display: React.FC<HedaerProps> = ({ setOpen }) => {
     const [totalCount, setTotalCount] = useState<number>(0); // Total count of items
 
     const getSourceFromStore = useSourceStore((state) => state.source);
+    const clearToken = useAuthStore((state) => state.clearToken);
 
     // Add state for loading
     const [isCreatingShareLink, setIsCreatingShareLink] = useState<boolean>(false);
@@ -128,6 +130,17 @@ const Display: React.FC<HedaerProps> = ({ setOpen }) => {
             source: card.source,
         })) || [];
 
+    const handleLogout = async () => {
+        try {
+            const res = await api.post(`/user/logout`);
+            if (!res.data.success) console.error('Unable to logout...');
+            clearToken();
+            return;
+        } catch (error) {
+            console.error((error as Error).message);
+        }
+    };
+
     return (
         <>
             <div className="flex flex-col items-center justify-center gap-3">
@@ -152,7 +165,7 @@ const Display: React.FC<HedaerProps> = ({ setOpen }) => {
                             size="md"
                             text="Logout"
                             startIcon={<LogoutIcon />}
-                            onClick={() => console.log('Logout clicked')}
+                            onClick={handleLogout}
                         />
                     </div>
                 </div>
