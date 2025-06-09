@@ -25,7 +25,7 @@ function App() {
                         <Route path="/brain/:hashCode" element={<SharedBrain />} />
 
                         <Route
-                            path="/login"
+                            path="/*"
                             element={!token ? <LoginPage /> : <Navigate to="/dashboard" />}
                         />
                         <Route
