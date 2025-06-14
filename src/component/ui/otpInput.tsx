@@ -49,8 +49,13 @@ export const OTPInput: React.FC<OTPInputProps> = ({
         }
 
         // Call onComplete when all fields are filled
-        if (otpString.length === length && !otpString.includes('')) {
+        const isComplete = newOtp.every((data) => data !== '');
+        if (isComplete && otpString.length === length) {
+            console.log('calling on complete');
+
             onComplete?.(otpString);
+
+            console.log(`on complete called : ${otpString}`);
         }
     };
 
@@ -104,8 +109,9 @@ export const OTPInput: React.FC<OTPInputProps> = ({
             inputRefs.current[nextIndex]?.focus();
 
             // Check if complete
-            if (pastedNumbers.length === length) {
-                onComplete?.(pastedNumbers.join(''));
+            if (pastedNumbers.length >= length) {
+                const completeOtp = pastedNumbers.slice(0, length).join('');
+                onComplete?.(completeOtp);
             }
         }
     };
@@ -115,13 +121,10 @@ export const OTPInput: React.FC<OTPInputProps> = ({
 
         inputRefs.current[index]?.setSelectionRange(1, 1);
 
-        if (index > 0 && !otp[index - 1]) {
-            // If the clicked input is not empty, focus on the previous input if it is empty
-            inputRefs.current[otp.indexOf('')]?.focus();
-        }
-        if (index < length - 1 && !otp[index + 1]) {
-            // If the clicked input is not empty, focus on the next input if it is empty
-            inputRefs.current[otp.lastIndexOf('') + 1]?.focus();
+        // Find the first empty field and focus it
+        const firstEmptyIndex = otp.findIndex((digit) => digit === '');
+        if (firstEmptyIndex !== -1 && firstEmptyIndex !== index) {
+            inputRefs.current[firstEmptyIndex]?.focus();
         }
     };
 
