@@ -4,7 +4,7 @@ import { ReactElement } from 'react';
 type Variants = 'primary' | 'secondary';
 type Sizes = 'sm' | 'md' | 'lg';
 
-interface ButtonProps {
+export interface ButtonProps {
     variants: Variants;
     size?: Sizes;
     loading?: boolean;
@@ -14,6 +14,7 @@ interface ButtonProps {
     endIcon?: ReactElement;
     fullWidth?: boolean;
     disabled?: boolean;
+    className?: string;
 }
 
 const variantStyles: Record<Variants, string> = {
@@ -28,7 +29,7 @@ const sizeStyles: Record<Sizes, string> = {
 };
 
 const defaultStyles =
-    'rounded-md flex items-center justify-center font-semibold focus:outline-none  transition disabled:opacity-50';
+    'rounded-md flex items-center justify-center font-semibold focus:outline-none transition disabled:opacity-50';
 
 export const Button = ({
     variants,
@@ -40,6 +41,7 @@ export const Button = ({
     endIcon,
     fullWidth = false,
     disabled = false,
+    className = '',
 }: ButtonProps) => {
     return (
         <button
@@ -52,13 +54,14 @@ export const Button = ({
         ${fullWidth ? 'w-full' : ''}
         ${loading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}
         ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+        ${className}
       `}
         >
             {loading ? (
                 <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
             ) : (
                 <>
-                    {startIcon && <span className="md:mr-2 ">{startIcon}</span>}
+                    {startIcon && <span className="md:mr-2">{startIcon}</span>}
                     <span className="hidden md:block">{text}</span>
                     {endIcon && <span className="ml-2">{endIcon}</span>}
                 </>
