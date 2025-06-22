@@ -151,14 +151,22 @@ const LoginPage = () => {
                         </div>
                     </form>
 
-                    <div className="text-center text-xs mt-4">
+                    <div className="text-center text-xs mt-4 flex justify-between items-center">
                         <span className="text-gray-600 dark:text-gray-400">
                             New here?{' '}
                             <button
                                 onClick={() => navigate('/register')}
-                                className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
+                                className="cursor-pointer font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
                             >
                                 Create an account
+                            </button>
+                        </span>
+                        <span className="text-gray-600 dark:text-gray-400">
+                            <button
+                                onClick={() => navigate('/register')}
+                                className="cursor-pointer font-medium text-amber-800 hover:text-amber-500 dark:text-amber-400 dark:hover:text-amber-300 transition-colors duration-200"
+                            >
+                                Forgot Password?
                             </button>
                         </span>
                     </div>
