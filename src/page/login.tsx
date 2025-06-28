@@ -1,13 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../component/ui/button';
 import { LoginLayout } from '../component/ui/loginLayout';
-import { SubmitIcon } from '../icons/SubmitIcon';
-import { FacebookIcon } from '../icons/FacebookIcon';
-import { GithubIcon } from '../icons/GithubIcon';
-import { TwitterIcon } from '../icons/TwitterIcon';
 import api from '../config/axios.config';
-import { useNavigate } from 'react-router-dom';
+import { SubmitIcon } from '../icons/SubmitIcon';
 import { useAuthStore } from '../store/authStore';
+import toast from 'react-hot-toast';
 
 const LoginPage = () => {
     const [formData, setFormData] = useState<Record<string, string>>({});
@@ -31,16 +29,22 @@ const LoginPage = () => {
 
             if (resp.status === 200) {
                 const token = resp.data.data.token;
+
                 if (!token) {
                     const hashCode = resp.data.data;
+                    if (!hashCode) {
+                        toast.success('Please verify your email to continue.');
+                    }
                     navigate(`/verify-email/${encodeURIComponent(hashCode)}`);
                     return;
                 }
                 setToken(resp.data.data.token);
+                toast.success('Login successful!!!');
                 setTimeout(() => navigate('/dashboard'), 500);
             }
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed. Please try again.');
+            toast.error('Login failed. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -163,7 +167,7 @@ const LoginPage = () => {
                         </span>
                         <span className="text-gray-600 dark:text-gray-400">
                             <button
-                                onClick={() => navigate('/register')}
+                                onClick={() => navigate('/forgot-password')}
                                 className="cursor-pointer font-medium text-amber-800 hover:text-amber-500 dark:text-amber-400 dark:hover:text-amber-300 transition-colors duration-200"
                             >
                                 Forgot Password?

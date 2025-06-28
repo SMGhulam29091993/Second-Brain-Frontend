@@ -1,13 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../component/ui/button';
 import { LoginLayout } from '../component/ui/loginLayout';
-import { SubmitIcon } from '../icons/SubmitIcon';
-import { FacebookIcon } from '../icons/FacebookIcon';
-import { GithubIcon } from '../icons/GithubIcon';
-import { TwitterIcon } from '../icons/TwitterIcon';
-import { useAuthStore } from '../store/authStore';
-import { useNavigate } from 'react-router-dom';
 import api from '../config/axios.config';
+import { SubmitIcon } from '../icons/SubmitIcon';
+import toast from 'react-hot-toast';
 
 interface FormData {
     username: string;
@@ -31,7 +28,6 @@ const RegisterPage = () => {
     const [errors, setErrors] = useState<FormErrors>({});
     const [loading, setLoading] = useState<boolean>(false);
     const navigate = useNavigate();
-    const setToken = useAuthStore((state) => state.setToken);
 
     const validateForm = (): boolean => {
         const newErrors: FormErrors = {};
@@ -39,23 +35,29 @@ const RegisterPage = () => {
         // Username validation
         if (!formData.username.trim()) {
             newErrors.username = 'Username is required';
+            toast.error('Username is required');
         } else if (formData.username.length < 3) {
             newErrors.username = 'Username must be at least 3 characters';
+            toast.error('Username must be at least 3 characters');
         }
 
         // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!formData.email.trim()) {
             newErrors.email = 'Email is required';
+            toast.error('Email is required');
         } else if (!emailRegex.test(formData.email)) {
             newErrors.email = 'Please enter a valid email address';
+            toast.error('Please enter a valid email address');
         }
 
         // Password validation
         if (!formData.password) {
             newErrors.password = 'Password is required';
+            toast.error('Password is required');
         } else if (formData.password.length < 6) {
             newErrors.password = 'Password must be at least 6 characters';
+            toast.error('Password must be at least 6 characters');
         }
 
         setErrors(newErrors);
@@ -73,6 +75,7 @@ const RegisterPage = () => {
 
     const handleSubmit = async () => {
         if (!validateForm()) {
+            toast.error('Please fill the form correctly before submitting.');
             return;
         }
 
@@ -83,13 +86,15 @@ const RegisterPage = () => {
             if (res.status === 201 || res.status === 200) {
                 const hashCode = res.data.data.hashedCode;
                 if (hashCode) {
+                    toast.success('Registration successful! Please verify your email.');
                     navigate(`/verify-email/${encodeURIComponent(hashCode)}`);
                 }
             }
         } catch (err: any) {
             setErrors({
-                general: err.response?.data?.message || 'Registration failed. Please try again.',
+                general: err.response?.data?.message ?? 'Registration failed. Please try again.',
             });
+            toast.error(err.response?.data?.message ?? 'Registration failed. Please try again.');
         } finally {
             setLoading(false);
         }

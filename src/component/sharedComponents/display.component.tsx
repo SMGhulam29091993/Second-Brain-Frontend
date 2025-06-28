@@ -1,16 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
-import React, { use, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import api from '../../config/axios.config';
+import { LogoutIcon } from '../../icons/LogoutIcon';
 import { NextIcon } from '../../icons/NextIcon';
+import { PlusIcon } from '../../icons/PlusIcons';
 import { PreviousIcon } from '../../icons/PreviousIcon';
+import { ShareIcon } from '../../icons/ShareIcons';
+import { useAuthStore } from '../../store/authStore';
 import { useSourceStore } from '../../store/sourceStore';
 import { AppLayout } from '../ui/appLayout';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { ShareIcon } from '../../icons/ShareIcons';
-import { PlusIcon } from '../../icons/PlusIcons';
-import { LogoutIcon } from '../../icons/LogoutIcon';
-import { useAuthStore } from '../../store/authStore';
+import toast from 'react-hot-toast';
 
 interface HedaerProps {
     setOpen: (open: boolean) => void;
@@ -36,8 +37,7 @@ const Display: React.FC<HedaerProps> = ({ setOpen }) => {
 
             if (resp.data && resp.data.data && resp.data.data.link) {
                 const shareLink = resp.data.data.link;
-                console.log('Share link created:', shareLink);
-
+                toast.success('Share link created successfully!');
                 // Copy the link to clipboard
                 await navigator.clipboard.writeText(shareLink);
                 alert('Share link copied to clipboard! : ' + shareLink);
@@ -116,6 +116,7 @@ const Display: React.FC<HedaerProps> = ({ setOpen }) => {
     }
 
     if (isError) {
+        toast.error('Something went wrong. Please try again later.');
         console.error('Error fetching data:', error);
         return <div>Something Went Wrong</div>;
     }
@@ -133,8 +134,12 @@ const Display: React.FC<HedaerProps> = ({ setOpen }) => {
     const handleLogout = async () => {
         try {
             const res = await api.post(`/user/logout`);
-            if (!res.data.success) console.error('Unable to logout...');
+            if (!res.data.success) {
+                toast.error('Unable to logout...');
+                console.error('Unable to logout...');
+            }
             clearToken();
+            toast.success('Logout successful!');
             return;
         } catch (error) {
             console.error((error as Error).message);

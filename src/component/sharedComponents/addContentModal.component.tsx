@@ -4,6 +4,7 @@ import api from '../../config/axios.config';
 import { CloseIcon } from '../../icons/CloseIcon';
 import { SubmitIcon } from '../../icons/SubmitIcon';
 import { Button } from '../ui/button';
+import toast from 'react-hot-toast';
 
 interface AddContentModalProps {
     open: boolean;
@@ -40,13 +41,17 @@ export const AddContentModal: React.FC<AddContentModalProps> = ({ open, onClose 
         const res = await api.post('/content/add-content', contentData);
         setIsLoading(true);
         if (res.status === 200 || res.status === 201) {
-            console.log('Content added successfully');
+            toast.success('Content added successfully!');
             setTimeout(() => {
                 setIsLoading(false);
                 setContentData({});
                 queryClient.invalidateQueries({ queryKey: ['allContent'] });
                 onClose();
             }, 1000);
+        } else {
+            toast.error('Failed to add content. Please try again.');
+            setIsLoading(false);
+            return;
         }
         return res.data.data;
     };

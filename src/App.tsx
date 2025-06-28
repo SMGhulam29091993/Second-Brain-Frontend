@@ -2,12 +2,15 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { PrivateRoute } from './component/Auth/PrivateRoute';
 import { useAuthStore } from './store/authStore';
+import { Toaster } from 'react-hot-toast';
 
 const Display = lazy(() => import('./component/sharedComponents/display.component'));
 const LoginPage = lazy(() => import('./page/login'));
 const RegisterPage = lazy(() => import('./page/signup'));
 const SharedBrain = lazy(() => import('./component/sharedComponents/sharedBrain.component'));
 const VerificationPage = lazy(() => import('./page/otpVerification'));
+const ForgotPassword = lazy(() => import('./page/forgotPassword'));
+const ChangePassword = lazy(() => import('./page/changePassword'));
 
 function App() {
     const token = useAuthStore((state) => state.token);
@@ -36,8 +39,14 @@ function App() {
                             path="/verify-email/:hashCode"
                             element={!token ? <VerificationPage /> : <Navigate to="/dashboard" />}
                         />
+                        <Route
+                            path="/forgot-password"
+                            element={!token ? <ForgotPassword /> : <Navigate to="/dashboard" />}
+                        />
+                        <Route path="/reset-password/:id" element={<ChangePassword />} />
                     </Routes>
                 </Suspense>
+                <Toaster position="top-center" />
             </BrowserRouter>
         </div>
     );

@@ -4,6 +4,7 @@ import { OTPInput } from '../component/ui/otpInput';
 import api from '../config/axios.config';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import toast from 'react-hot-toast';
 
 const verificationPage = () => {
     // const [otpValue, setOtpValue] = useState('');
@@ -17,7 +18,6 @@ const verificationPage = () => {
     const hashCode = params.hashCode ? decodeURIComponent(params.hashCode) : '';
 
     const handleOtpComplete = async (otp: string) => {
-        console.log('OTP Complete:', otp);
         const isValidOtp = otp.length === 6 && /^[a-zA-Z0-9]+$/.test(otp); // Check if OTP is 6 digits
         if (!isValidOtp) {
             console.error('Invalid OTP format');
@@ -25,12 +25,14 @@ const verificationPage = () => {
         }
         const res = await api.post(`/user/verify/${hashCode}`, { code: otp });
         if (res.status !== 200) {
+            toast.error('OTP verification failed. Please try again.');
             console.error('OTP verification failed');
             return;
         }
-        console.log('OTP verified successfully', JSON.stringify(res.data.data));
         const token = res.data.data.token;
         const user = res.data.data.user;
+
+        toast.success('OTP verified successfully!');
         if (user.isEmailVerified) {
             setToken(token);
             navigate('/dashboard');

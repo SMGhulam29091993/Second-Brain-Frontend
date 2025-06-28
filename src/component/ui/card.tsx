@@ -1,13 +1,12 @@
-import { DeleteIcon } from '../../icons/DeleteIcons';
-import { ShareIcon } from '../../icons/ShareIcons';
-import { useEffect, useState } from 'react';
-import { YoutubeIcon } from '../../icons/YoutubeIcons';
-import { FacebookIcon } from '../../icons/FacebookIcon';
-import { TwitterIcon } from '../../icons/TwitterIcon';
-import { GithubIcon } from '../../icons/GithubIcon';
-import api from '../../config/axios.config';
 import { useQueryClient } from '@tanstack/react-query';
-
+import { useEffect, useState } from 'react';
+import api from '../../config/axios.config';
+import { DeleteIcon } from '../../icons/DeleteIcons';
+import { FacebookIcon } from '../../icons/FacebookIcon';
+import { GithubIcon } from '../../icons/GithubIcon';
+import { TwitterIcon } from '../../icons/TwitterIcon';
+import { YoutubeIcon } from '../../icons/YoutubeIcons';
+import toast from 'react-hot-toast';
 interface CardProps {
     id: string;
     title: string;
@@ -139,11 +138,14 @@ export const Card = ({ id, title, source, link }: CardProps) => {
         const deleteContent = await api.delete(`/content/delete-content`, { data: body });
         if (deleteContent.status === 200) {
             // Optionally, you can add a success message or refresh the content list
-            console.log('Content deleted successfully');
+            toast.success('Content deleted successfully!');
 
             await queryClient.invalidateQueries({
                 queryKey: ['allContent'],
             });
+        } else {
+            toast.error('Failed to delete content. Please try again.');
+            console.error('Failed to delete content:', deleteContent);
         }
         return;
     };
