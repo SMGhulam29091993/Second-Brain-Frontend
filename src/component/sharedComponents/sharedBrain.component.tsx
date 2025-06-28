@@ -28,8 +28,6 @@ const SharedBrain = () => {
         }
     }, [getSourceFromStore, source]);
 
-    console.log('Source:', source);
-
     // Function to fetch all content based on source, pageNumber, and pageSize
     const fetchAllContent = async () => {
         const queryParams = new URLSearchParams();

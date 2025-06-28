@@ -2,7 +2,6 @@ import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'ax
 import { useAuthStore } from '../store/authStore';
 
 const apiUrl: string = import.meta.env.VITE_BASE_URL;
-console.log('API URL:', apiUrl);
 
 // const getToken = () => localStorage.getItem('token');
 
@@ -52,7 +51,7 @@ api.interceptors.response.use(
             JSON.stringify(error.response.data).includes('TokenExpiredError');
 
         if (is401or403 || is500TokenExpired) {
-            console.log('Token expired or unauthorized, attempting to refresh token...');
+            ('Token expired or unauthorized, attempting to refresh token...');
 
             const setToken = useAuthStore.getState().setToken;
             const clearToken = useAuthStore.getState().clearToken;

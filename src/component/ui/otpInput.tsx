@@ -51,11 +51,7 @@ export const OTPInput: React.FC<OTPInputProps> = ({
         // Call onComplete when all fields are filled
         const isComplete = newOtp.every((data) => data !== '');
         if (isComplete && otpString.length === length) {
-            console.log('calling on complete');
-
             onComplete?.(otpString);
-
-            console.log(`on complete called : ${otpString}`);
         }
     };
 

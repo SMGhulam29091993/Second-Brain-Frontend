@@ -8,8 +8,6 @@ interface PrivateRouteProps {
 
 export const PrivateRoute = ({ children, token, redirect }: PrivateRouteProps) => {
     if (!token || token === null) {
-        console.log('Token is null or undefined');
-
         return <Navigate to={redirect} />;
     }
     return <>{children ? children : <Outlet />}</>;
