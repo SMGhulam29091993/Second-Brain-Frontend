@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../component/ui/button';
 import { LoginLayout } from '../component/ui/loginLayout';
@@ -7,6 +7,10 @@ import { SubmitIcon } from '../icons/SubmitIcon';
 import toast from 'react-hot-toast';
 
 const ChangePassword = () => {
+    useEffect(() => {
+        document.title = 'Reset Password | Second Brain';
+    }, []);
+
     const [formData, setFormData] = useState({
         newPassword: '',
         confirmPassword: '',

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../component/ui/button';
 import { LoginLayout } from '../component/ui/loginLayout';
@@ -20,6 +20,10 @@ interface FormErrors {
 }
 
 const RegisterPage = () => {
+    useEffect(() => {
+        document.title = 'Sign Up | Second Brain';
+    }, []);
+
     const [formData, setFormData] = useState<FormData>({
         username: '',
         email: '',

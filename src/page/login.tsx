@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../component/ui/button';
 import { LoginLayout } from '../component/ui/loginLayout';
@@ -8,6 +8,10 @@ import { useAuthStore } from '../store/authStore';
 import toast from 'react-hot-toast';
 
 const LoginPage = () => {
+    useEffect(() => {
+        document.title = 'Sign In | Second Brain';
+    }, []);
+
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);

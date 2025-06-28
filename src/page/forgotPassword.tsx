@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmitIcon } from '../icons/SubmitIcon';
 import { Button } from '../component/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,10 @@ import { LoginLayout } from '../component/ui/loginLayout';
 import toast from 'react-hot-toast';
 
 const ForgotPassword = () => {
+    useEffect(() => {
+        document.title = 'Forgot Password | Second Brain';
+    }, []);
+
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [formData, setFormData] = useState<Record<string, string>>({});

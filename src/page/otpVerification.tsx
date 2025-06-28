@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LoginLayout } from '../component/ui/loginLayout';
 import { OTPInput } from '../component/ui/otpInput';
 import api from '../config/axios.config';
@@ -7,6 +7,9 @@ import { useAuthStore } from '../store/authStore';
 import toast from 'react-hot-toast';
 
 const verificationPage = () => {
+    useEffect(() => {
+        document.title = 'Otp Verification | Second Brain';
+    }, []);
     // const [otpValue, setOtpValue] = useState('');
     const [isComplete, setIsComplete] = useState(false);
     // const [isDisabled, setIsDisabled] = useState(false);

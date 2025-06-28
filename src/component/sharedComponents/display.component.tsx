@@ -18,6 +18,9 @@ interface HedaerProps {
 }
 
 const Display: React.FC<HedaerProps> = ({ setOpen }) => {
+    useEffect(() => {
+        document.title = 'Dashboard | Second Brain';
+    }, []);
     const [source, setSource] = useState<string>(''); // Default source
     const [pageNumber, setPageNumber] = useState<number>(1); // Default page number
     const pageSize = 10; // Default page size
