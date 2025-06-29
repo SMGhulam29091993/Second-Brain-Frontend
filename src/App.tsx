@@ -11,6 +11,8 @@ const SharedBrain = lazy(() => import('./component/sharedComponents/sharedBrain.
 const VerificationPage = lazy(() => import('./page/otpVerification'));
 const ForgotPassword = lazy(() => import('./page/forgotPassword'));
 const ChangePassword = lazy(() => import('./page/changePassword'));
+const SummaryPage = lazy(() => import('./page/summary'));
+const SharedSummaryPage = lazy(() => import('./page/sharedSummary'));
 
 function App() {
     const token = useAuthStore((state) => state.token);
@@ -26,6 +28,7 @@ function App() {
                         </Route>
                         {/* Public Routes */}
                         <Route path="/brain/:hashCode" element={<SharedBrain />} />
+                        <Route path="/shared-summary/:hash" element={<SharedSummaryPage />} />
 
                         <Route
                             path="/*"
@@ -44,6 +47,7 @@ function App() {
                             element={!token ? <ForgotPassword /> : <Navigate to="/dashboard" />}
                         />
                         <Route path="/reset-password/:id" element={<ChangePassword />} />
+                        <Route path="/summary/:id" element={<SummaryPage />} />
                     </Routes>
                 </Suspense>
                 <Toaster position="top-center" />
