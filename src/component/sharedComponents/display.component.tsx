@@ -132,6 +132,7 @@ const Display: React.FC<HedaerProps> = ({ setOpen }) => {
             title: card.title,
             link: card.link,
             source: card.source,
+            summary: card.summary, // Pass summary to Card component
         })) || [];
 
     const handleLogout = async () => {
@@ -186,6 +187,7 @@ const Display: React.FC<HedaerProps> = ({ setOpen }) => {
                                 title={card.title}
                                 link={card.link}
                                 source={card.source}
+                                summary={card.summary}
                             />
                         ))
                     ) : (
