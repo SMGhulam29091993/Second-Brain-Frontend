@@ -38,8 +38,9 @@ export const AddContentModal: React.FC<AddContentModalProps> = ({ open, onClose 
     };
 
     const handleSubmit = async () => {
-        const res = await api.post('/content/add-content', contentData);
         setIsLoading(true);
+        const res = await api.post('/content/add-content', contentData);
+
         if (res.status === 200 || res.status === 201) {
             toast.success('Content added successfully!');
             setTimeout(() => {
