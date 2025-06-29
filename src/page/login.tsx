@@ -15,6 +15,7 @@ const LoginPage = () => {
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     const setToken = useAuthStore((state) => state.setToken);
@@ -47,7 +48,8 @@ const LoginPage = () => {
                 setTimeout(() => navigate('/dashboard'), 500);
             }
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Login failed. Please try again.');
+            console.error('Login error:', err);
+            setError('Invalid Credentials. Please try again.');
             toast.error('Login failed. Please try again.');
         } finally {
             setLoading(false);
@@ -122,27 +124,27 @@ const LoginPage = () => {
                             </label>
                             <div className="relative">
                                 <input
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     id="password"
                                     placeholder="••••••••"
                                     className="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 transition-all duration-200"
                                     onChange={onChangeHandler}
                                 />
-                                <span className="absolute inset-y-0 right-0 flex items-center pr-3">
-                                    <svg
-                                        className="h-4 w-4 text-gray-400"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2"
-                                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                                        />
-                                    </svg>
-                                </span>
+                            </div>
+                            <div className="flex items-center mt-1">
+                                <input
+                                    id="show-password"
+                                    type="checkbox"
+                                    checked={showPassword}
+                                    onChange={() => setShowPassword((prev) => !prev)}
+                                    className="mr-2"
+                                />
+                                <label
+                                    htmlFor="show-password"
+                                    className="text-xs text-gray-700 dark:text-gray-300 cursor-pointer select-none"
+                                >
+                                    Show Password
+                                </label>
                             </div>
                         </div>
 
