@@ -116,6 +116,9 @@ const RegisterPage = () => {
                         <p className="text-center text-xs text-gray-600 dark:text-gray-400">
                             Start organizing your thoughts with Second Brain
                         </p>
+                        <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            Your personal knowledge hub for organizing notes, sources, and ideas.
+                        </p>
                     </div>
 
                     {errors.general && (

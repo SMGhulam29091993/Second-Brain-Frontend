@@ -67,6 +67,9 @@ const LoginPage = () => {
                         <p className="text-center text-sm text-gray-600 dark:text-gray-400">
                             Sign in to access your Second Brain
                         </p>
+                        <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            Your personal knowledge hub for organizing notes, sources, and ideas.
+                        </p>
                     </div>
 
                     {error && (

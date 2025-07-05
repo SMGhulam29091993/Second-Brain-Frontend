@@ -45,8 +45,43 @@ export function LoginLayout<T extends object>(WrappedComponent: ComponentType<T>
                         </div>
                     </button>
                 </header>
-                <main className="flex-1 bg-slate-100 dark:bg-black flex items-center justify-center overflow-hidden">
-                    <WrappedComponent {...props} />
+                <main className="flex-1 bg-slate-100 dark:bg-black flex flex-col md:flex-row items-center justify-center overflow-hidden p-4">
+                    <div className="text-center md:text-left md:w-1/2 lg:w-1/3 p-6 space-y-4">
+                        <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white leading-tight">
+                            Unlock Your <span className="text-orange-500">Second Brain</span>
+                        </h1>
+                        <p className="text-lg text-gray-700 dark:text-gray-300">
+                            Your ultimate digital companion for capturing, organizing, and
+                            retrieving every piece of information that matters to you.
+                        </p>
+                        <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
+                            <li>
+                                Effortlessly save and organize notes, articles, and various sources.
+                            </li>
+                            <li>
+                                Integrate knowledge from platforms like YouTube, GitHub, and X
+                                (formerly Twitter).
+                            </li>
+                            <li>
+                                Build a comprehensive knowledge network by connecting related
+                                thoughts and information.
+                            </li>
+                            <li>
+                                Access your organized information anytime, anywhere, across devices.
+                            </li>
+                            <li>
+                                Enhance your productivity and creativity by centralizing your
+                                knowledge.
+                            </li>
+                            <li>Summarize and share your insights with ease.</li>
+                        </ul>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                            "The best way to predict the future is to create it." - Peter Drucker
+                        </p>
+                    </div>
+                    <div className="md:w-1/2 lg:w-1/3 flex justify-center items-center">
+                        <WrappedComponent {...props} />
+                    </div>
                 </main>
             </div>
         );
