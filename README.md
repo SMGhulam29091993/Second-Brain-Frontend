@@ -1,54 +1,51 @@
-# React + TypeScript + Vite
+# Project Context: second-brain-frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This document outlines the key aspects of the `second-brain-frontend` project for quick reference.
 
-Currently, two official plugins are available:
+## 1. Project Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This is a frontend application built using **React** and **TypeScript**, bootstrapped with **Vite**. It appears to be a "Second Brain" application, likely for organizing notes, sources, or knowledge.
 
-## Expanding the ESLint configuration
+## 2. Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **UI Framework**: [React 19](https://react.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Routing**: [React Router DOM](https://reactrouter.com/)
+- **State Management**: [Zustand](https://github.com/pmndrs/zustand)
+- **Data Fetching & Caching**: [TanStack React Query](https://tanstack.com/query/latest)
+- **HTTP Client**: [Axios](https://axios-http.com/)
+- **Notifications**: [React Hot Toast](https://react-hot-toast.com/)
+- **Linting & Formatting**: ESLint & Prettier
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## 3. Project Structure
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The `src` directory is organized as follows:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- `src/assets`: Static assets like images.
+- `src/component`: Reusable React components.
+    - `Auth/`: Components related to authentication (e.g., `PrivateRoute`).
+    - `sharedComponents/`: Components used across multiple pages (e.g., modals, headers).
+    - `ui/`: Generic, low-level UI elements (e.g., `Button`, `Card`, `AppLayout`).
+- `src/config`: Configuration files, such as the Axios instance setup (`axios.config.tsx`).
+- `src/icons`: SVG icons imported as React components.
+- `src/page`: Top-level components that correspond to application pages/routes (e.g., `login`, `summary`).
+- `src/store`: Zustand state management stores (`authStore`, `sourceStore`).
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## 4. Available Scripts
+
+The following scripts are defined in `package.json`:
+
+- `npm run dev`: Starts the Vite development server.
+- `npm run build`: Compiles TypeScript and builds the application for production.
+- `npm run lint`: Lints the codebase using ESLint.
+- `npm run preview`: Serves the production build locally for preview.
+
+## 5. Key Conventions
+
+- **API Calls**: Handled through a pre-configured `axios` instance located in `src/config/axios.config.tsx`.
+- **State Management**: Global state is managed with `zustand`. There are separate stores for authentication (`authStore`) and application data (`sourceStore`).
+- **Data Fetching**: Asynchronous server state (e.g., fetching data from an API) is managed by `TanStack React Query`.
+- **Routing**: The application uses `react-router-dom` for navigation, with page components located in the `src/page` directory.
+- **Styling**: Utility-first CSS is implemented with Tailwind CSS.
