@@ -178,17 +178,23 @@ const SummaryPage: React.FC = () => {
 
                 {content.source === 'twitter' && (
                     <div className="mb-4">
-                        <a href={content.link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                            View on Twitter
-                        </a>
+                        <Button
+                            variants="primary"
+                            size="md"
+                            onClick={() => window.open(content.link, '_blank')}
+                            text="View on Twitter"
+                        />
                     </div>
                 )}
 
                 {content.source === 'github' && (
                     <div className="mb-4">
-                        <a href={content.link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                            View on GitHub
-                        </a>
+                        <Button
+                            variants="primary"
+                            size="md"
+                            onClick={() => window.open(content.link, '_blank')}
+                            text="View on GitHub"
+                        />
                     </div>
                 )}
 
