@@ -10,6 +10,7 @@ import { GithubIcon } from '../../icons/GithubIcon';
 import { TwitterIcon } from '../../icons/TwitterIcon';
 import { YoutubeIcon } from '../../icons/YoutubeIcons';
 import toast from 'react-hot-toast';
+import { Tooltip } from './tooltip';
 interface CardProps {
     id: string;
     title: string;
@@ -189,24 +190,28 @@ export const Card = ({ id, title, source, link, summary }: CardProps) => {
                         {/* <span className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"> */}
                         {/* <ShareIcon />
                         </span> */}
-                        <span
-                            className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"
-                            onClick={() => navigate(`/summary/${id}`)}
-                        >
-                            <SummaryIcon />
-                        </span>
-                        <span
-                            className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"
-                            onClick={handleDelete}
-                        >
-                            <DeleteIcon />
-                        </span>
+                        <Tooltip text="Summary">
+                            <span
+                                className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"
+                                onClick={() => navigate(`/summary/${id}`)}
+                            >
+                                <SummaryIcon />
+                            </span>
+                        </Tooltip>
+                        <Tooltip text="Delete">
+                            <span
+                                className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"
+                                onClick={handleDelete}
+                            >
+                                <DeleteIcon />
+                            </span>
+                        </Tooltip>
                     </div>
                 </div>
                 <div className="font-bold w-32">
                     <h3 className="truncate">{title}</h3>
                 </div>
-                
+
                 <div className="mt-2 hover:scale-102 transition-all duration-300 cursor-pointer">
                     {source === 'youtube' && (
                         <iframe
