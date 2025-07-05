@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/axios.config';
 import { DeleteIcon } from '../../icons/DeleteIcons';
+import { SummaryIcon } from '../../icons/SummaryIcon';
+
 import { FacebookIcon } from '../../icons/FacebookIcon';
 import { GithubIcon } from '../../icons/GithubIcon';
 import { TwitterIcon } from '../../icons/TwitterIcon';
@@ -189,6 +191,12 @@ export const Card = ({ id, title, source, link, summary }: CardProps) => {
                         </span> */}
                         <span
                             className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"
+                            onClick={() => navigate(`/summary/${id}`)}
+                        >
+                            <SummaryIcon />
+                        </span>
+                        <span
+                            className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"
                             onClick={handleDelete}
                         >
                             <DeleteIcon />
@@ -198,16 +206,7 @@ export const Card = ({ id, title, source, link, summary }: CardProps) => {
                 <div className="font-bold w-32">
                     <h3 className="truncate">{title}</h3>
                 </div>
-                {summary && (
-                    <div className="mt-2">
-                        <button
-                            onClick={() => navigate(`/summary/${id}`)}
-                            className="text-sm text-blue-600 hover:underline"
-                        >
-                            Show Summary
-                        </button>
-                    </div>
-                )}
+                
                 <div className="mt-2 hover:scale-102 transition-all duration-300 cursor-pointer">
                     {source === 'youtube' && (
                         <iframe
