@@ -63,9 +63,7 @@ export function LoginLayout<T extends object>(WrappedComponent: ComponentType<T>
                                     Effortlessly save and organize notes, articles, and various
                                     sources.
                                 </li>
-                                <li>
-                                    Integrate knowledge from platforms like YouTube, GitHub, and X.
-                                </li>
+                                <li>Integrate knowledge from platforms like YouTube, GitHub, and <span>X &#40;formerly Twitter&#41;</span>.</li>
                                 <li>
                                     Build a comprehensive knowledge network and centralize your
                                     knowledge.
@@ -99,10 +97,7 @@ export function LoginLayout<T extends object>(WrappedComponent: ComponentType<T>
                                         Effortlessly save and organize notes, articles, and various
                                         sources.
                                     </li>
-                                    <li>
-                                        Integrate knowledge from platforms like YouTube, GitHub, and
-                                        X - formerly known as Twitter.
-                                    </li>
+                                    <li>Integrate knowledge from platforms like YouTube, GitHub, and <span>X &#40;formerly Twitter&#41;</span>.</li>
                                     <li>
                                         Build a comprehensive knowledge network and centralize your
                                         knowledge.

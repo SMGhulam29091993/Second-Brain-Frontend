@@ -49,7 +49,7 @@ const verificationPage = () => {
         }, 2000);
     };
 
-    const handleOtpChange = (otp: string) => {
+    const handleOtpChange = () => {
         // setOtpValue(otp);
         setIsComplete(false);
     };

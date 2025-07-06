@@ -1,20 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
-import api from '../config/axios.config';
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
+import { useNavigate, useParams } from 'react-router-dom';
 import { AppLayout } from '../component/ui/appLayout';
 import { Button } from '../component/ui/button';
+import api from '../config/axios.config';
+import { EyeIcon } from '../icons/EyeIcon';
+import { PreviousIcon } from '../icons/PreviousIcon';
 import { ShareIcon } from '../icons/ShareIcons';
-import toast from 'react-hot-toast';
-
-
 
 const SummaryPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [isCreatingShareLink, setIsCreatingShareLink] = useState<boolean>(false);
-    
 
     const fetchContent = async () => {
         const response = await api.get(`/content/summary/${id}`);
@@ -84,42 +82,6 @@ const SummaryPage: React.FC = () => {
         return videoId;
     };
 
-    
-
-    const parseGithubUrl = (url: string) => {
-        try {
-            const urlObj = new URL(url);
-            const pathname = urlObj.pathname;
-            const parts = pathname.split('/').filter(Boolean);
-
-            if (parts.length >= 2) {
-                return {
-                    owner: parts[0],
-                    repo: parts[1],
-                };
-            }
-            return null;
-        } catch (e) {
-            console.error('Invalid GitHub URL:', e);
-            return null;
-        }
-    };
-
-    const formatRelativeTime = (dateString: string) => {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-        if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
-        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-        if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`;
-        if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} months ago`;
-        return `${Math.floor(diffInSeconds / 31536000)} years ago`;
-    };
-
-    
-
     if (isLoading) {
         return (
             <div className="dark:text-white text-black flex flex-col items-center text-lg font-bold">
@@ -150,6 +112,7 @@ const SummaryPage: React.FC = () => {
                             variants="secondary"
                             text="Back"
                             size="md"
+                            startIcon={<PreviousIcon />}
                             onClick={() => navigate('/dashboard')}
                         />
                         <Button
@@ -183,6 +146,7 @@ const SummaryPage: React.FC = () => {
                             size="md"
                             onClick={() => window.open(content.link, '_blank')}
                             text="View on Twitter"
+                            startIcon={<EyeIcon />}
                         />
                     </div>
                 )}
@@ -194,6 +158,7 @@ const SummaryPage: React.FC = () => {
                             size="md"
                             onClick={() => window.open(content.link, '_blank')}
                             text="View on GitHub"
+                            startIcon={<EyeIcon />}
                         />
                     </div>
                 )}

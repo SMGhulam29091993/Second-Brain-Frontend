@@ -1,20 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import api from '../config/axios.config';
 import { AppLayout } from '../component/ui/appLayout';
 import { Button } from '../component/ui/button';
+
 import { ShareIcon } from '../icons/ShareIcons';
 import toast from 'react-hot-toast';
-
-
+import { EyeIcon } from '../icons/EyeIcon';
+import { SubmitIcon } from '../icons/SubmitIcon';
 
 const SharedSummaryPage: React.FC = () => {
     const { hash } = useParams<{ hash: string }>();
     const navigate = useNavigate();
     const [isCreatingShareLink, setIsCreatingShareLink] = useState<boolean>(false);
-    
 
     const createShareLink = async () => {
         setIsCreatingShareLink(true);
@@ -57,42 +57,6 @@ const SharedSummaryPage: React.FC = () => {
         return videoId;
     };
 
-    
-
-    const parseGithubUrl = (url: string) => {
-        try {
-            const urlObj = new URL(url);
-            const pathname = urlObj.pathname;
-            const parts = pathname.split('/').filter(Boolean);
-
-            if (parts.length >= 2) {
-                return {
-                    owner: parts[0],
-                    repo: parts[1],
-                };
-            }
-            return null;
-        } catch (e) {
-            console.error('Invalid GitHub URL:', e);
-            return null;
-        }
-    };
-
-    const formatRelativeTime = (dateString: string) => {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-        if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
-        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-        if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`;
-        if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} months ago`;
-        return `${Math.floor(diffInSeconds / 31536000)} years ago`;
-    };
-
-    
-
     if (isLoading) {
         return (
             <div className="dark:text-white text-black flex flex-col items-center text-lg font-bold">
@@ -121,9 +85,18 @@ const SharedSummaryPage: React.FC = () => {
                     <div className="flex gap-2">
                         <Button
                             variants="secondary"
-                            text="Register"
+                            text="Sign Up"
                             size="md"
-                            onClick={() => navigate('/register')}
+                            startIcon={<SubmitIcon />}
+                            onClick={() => navigate('/signup')}
+                        />
+                        <Button
+                            variants="secondary"
+                            text="Share"
+                            size="md"
+                            onClick={createShareLink}
+                            loading={isCreatingShareLink}
+                            startIcon={<ShareIcon />}
                         />
                     </div>
                 </div>
@@ -144,17 +117,25 @@ const SharedSummaryPage: React.FC = () => {
 
                 {content.source === 'twitter' && (
                     <div className="mb-4">
-                        <a href={content.link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                            View on Twitter
-                        </a>
+                        <Button
+                            variants="primary"
+                            size="md"
+                            onClick={() => window.open(content.link, '_blank')}
+                            text="View on Twitter"
+                            startIcon={<EyeIcon />}
+                        />
                     </div>
                 )}
 
                 {content.source === 'github' && (
                     <div className="mb-4">
-                        <a href={content.link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                            View on GitHub
-                        </a>
+                        <Button
+                            variants="primary"
+                            size="md"
+                            onClick={() => window.open(content.link, '_blank')}
+                            text="View on GitHub"
+                            startIcon={<EyeIcon />}
+                        />
                     </div>
                 )}
 
