@@ -211,11 +211,6 @@ export const Card = ({ id, title, source, link, summary }: CardProps) => {
                 <div className="font-bold w-32">
                     <h3 className="truncate">{title}</h3>
                 </div>
-                {summary && (
-                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
-                        {summary}
-                    </div>
-                )}
 
                 <div className="mt-2 hover:scale-102 transition-all duration-300 cursor-pointer">
                     {source === 'youtube' && (
