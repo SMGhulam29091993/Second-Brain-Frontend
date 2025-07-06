@@ -101,7 +101,7 @@ export function LoginLayout<T extends object>(WrappedComponent: ComponentType<T>
                                     </li>
                                     <li>
                                         Integrate knowledge from platforms like YouTube, GitHub, and
-                                        X.
+                                        X - formerly known as Twitter.
                                     </li>
                                     <li>
                                         Build a comprehensive knowledge network and centralize your
