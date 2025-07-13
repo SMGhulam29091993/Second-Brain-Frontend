@@ -15,6 +15,7 @@ import toast from 'react-hot-toast';
 
 interface HedaerProps {
     setOpen: (open: boolean) => void;
+    hideShareButton?: boolean; // Optional prop to hide share button
 }
 
 const Display: React.FC<HedaerProps> = ({ setOpen }) => {
@@ -155,13 +156,13 @@ const Display: React.FC<HedaerProps> = ({ setOpen }) => {
             <div className="flex flex-col items-center justify-center gap-3">
                 <div className="fixed top-20 right-3 z-40">
                     <div className="flex flex-col flex-wrap md:flex-row  items-center gap-2">
-                        <Button
+                        {/* <Button
                             variants="secondary"
                             text={isCreatingShareLink ? 'Creating...' : 'Share'}
                             startIcon={<ShareIcon />}
                             size="md"
                             onClick={createShareLink}
-                        />
+                        /> */}
                         <Button
                             variants="primary"
                             text="Add Content"
@@ -188,6 +189,7 @@ const Display: React.FC<HedaerProps> = ({ setOpen }) => {
                                 link={card.link}
                                 source={card.source}
                                 summary={card.summary}
+                                deleteOption={true}
                             />
                         ))
                     ) : (
