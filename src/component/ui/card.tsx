@@ -17,6 +17,7 @@ interface CardProps {
     source: 'youtube' | 'facebook' | 'twitter' | 'github';
     link: string;
     summary?: string;
+    deleteOption?: boolean;
 }
 
 interface GithubRepo {
@@ -33,7 +34,7 @@ interface GithubRepo {
     updated_at: string;
 }
 
-export const Card = ({ id, title, source, link, summary }: CardProps) => {
+export const Card = ({ id, title, source, link, deleteOption }: CardProps) => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [repoData, setRepoData] = useState<GithubRepo | null>(null);
@@ -198,14 +199,16 @@ export const Card = ({ id, title, source, link, summary }: CardProps) => {
                                 <SummaryIcon />
                             </span>
                         </Tooltip>
-                        <Tooltip text="Delete">
-                            <span
-                                className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"
-                                onClick={handleDelete}
-                            >
-                                <DeleteIcon />
-                            </span>
-                        </Tooltip>
+                        {deleteOption && (
+                            <Tooltip text="Delete">
+                                <span
+                                    className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"
+                                    onClick={handleDelete}
+                                >
+                                    <DeleteIcon />
+                                </span>
+                            </Tooltip>
+                        )}
                     </div>
                 </div>
                 <div className="font-bold w-32">
