@@ -90,14 +90,14 @@ const SharedSummaryPage: React.FC = () => {
                             startIcon={<SubmitIcon />}
                             onClick={() => navigate('/signup')}
                         />
-                        <Button
+                        {/* <Button
                             variants="secondary"
                             text="Share"
                             size="md"
                             onClick={createShareLink}
                             loading={isCreatingShareLink}
                             startIcon={<ShareIcon />}
-                        />
+                        /> */}
                     </div>
                 </div>
 
