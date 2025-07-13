@@ -85,6 +85,7 @@ const SharedBrain = () => {
                                 title={card.title}
                                 link={card.link}
                                 source={card.source}
+                                deleteOption={false}
                             />
                         ))
                     ) : (
