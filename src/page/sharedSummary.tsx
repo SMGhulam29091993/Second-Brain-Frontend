@@ -1,35 +1,33 @@
 import { useQuery } from '@tanstack/react-query';
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
-import api from '../config/axios.config';
+import React from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { AppLayout } from '../component/ui/appLayout';
 import { Button } from '../component/ui/button';
+import api from '../config/axios.config';
 
-import { ShareIcon } from '../icons/ShareIcons';
-import toast from 'react-hot-toast';
 import { EyeIcon } from '../icons/EyeIcon';
 import { SubmitIcon } from '../icons/SubmitIcon';
 
 const SharedSummaryPage: React.FC = () => {
     const { hash } = useParams<{ hash: string }>();
     const navigate = useNavigate();
-    const [isCreatingShareLink, setIsCreatingShareLink] = useState<boolean>(false);
 
-    const createShareLink = async () => {
-        setIsCreatingShareLink(true);
-        try {
-            const shareLink = window.location.href;
-            toast.success('Share link copied to clipboard!');
-            await navigator.clipboard.writeText(shareLink);
-            alert('Share link copied to clipboard! : ' + shareLink);
-        } catch (error) {
-            console.error('Error copying share link:', error);
-            toast.error('Failed to copy share link.');
-        } finally {
-            setIsCreatingShareLink(false);
-        }
-    };
+    // const [isCreatingShareLink, setIsCreatingShareLink] = useState<boolean>(false);
+
+    // const createShareLink = async () => {
+    //     setIsCreatingShareLink(true);
+    //     try {
+    //         const shareLink = window.location.href;
+    //         toast.success('Share link copied to clipboard!');
+    //         await navigator.clipboard.writeText(shareLink);
+    //         alert('Share link copied to clipboard! : ' + shareLink);
+    //     } catch (error) {
+    //         console.error('Error copying share link:', error);
+    //         toast.error('Failed to copy share link.');
+    //     } finally {
+    //         setIsCreatingShareLink(false);
+    //     }
+    // };
 
     const fetchSharedContent = async () => {
         const response = await api.get(`/link/summary/${hash}`);

@@ -1,17 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import api from '../../config/axios.config';
 import { LogoutIcon } from '../../icons/LogoutIcon';
 import { NextIcon } from '../../icons/NextIcon';
 import { PlusIcon } from '../../icons/PlusIcons';
 import { PreviousIcon } from '../../icons/PreviousIcon';
-import { ShareIcon } from '../../icons/ShareIcons';
 import { useAuthStore } from '../../store/authStore';
 import { useSourceStore } from '../../store/sourceStore';
 import { AppLayout } from '../ui/appLayout';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import toast from 'react-hot-toast';
 
 interface HedaerProps {
     setOpen: (open: boolean) => void;
@@ -31,54 +30,54 @@ const Display: React.FC<HedaerProps> = ({ setOpen }) => {
     const clearToken = useAuthStore((state) => state.clearToken);
 
     // Add state for loading
-    const [isCreatingShareLink, setIsCreatingShareLink] = useState<boolean>(false);
+    // const [isCreatingShareLink, setIsCreatingShareLink] = useState<boolean>(false);
 
-    const createShareLink = async () => {
-        setIsCreatingShareLink(true);
+    // const createShareLink = async () => {
+    //     setIsCreatingShareLink(true);
 
-        try {
-            const resp = await api.post(`/link/brain-link`, { shareBrain: true });
+    //     try {
+    //         const resp = await api.post(`/link/brain-link`, { shareBrain: true });
 
-            if (resp.data && resp.data.data && resp.data.data.link) {
-                const shareLink = resp.data.data.link;
-                toast.success('Share link created successfully!');
-                // Copy the link to clipboard
-                await navigator.clipboard.writeText(shareLink);
-                alert('Share link copied to clipboard! : ' + shareLink);
-            } else {
-                throw new Error('Invalid response format');
-            }
-        } catch (error: any) {
-            console.error('Error creating share link:', error);
+    //         if (resp.data && resp.data.data && resp.data.data.link) {
+    //             const shareLink = resp.data.data.link;
+    //             toast.success('Share link created successfully!');
+    //             // Copy the link to clipboard
+    //             await navigator.clipboard.writeText(shareLink);
+    //             alert('Share link copied to clipboard! : ' + shareLink);
+    //         } else {
+    //             throw new Error('Invalid response format');
+    //         }
+    //     } catch (error: any) {
+    //         console.error('Error creating share link:', error);
 
-            let errorMessage = 'Failed to create share link. ';
+    //         let errorMessage = 'Failed to create share link. ';
 
-            if (error.response) {
-                // Server responded with error status
-                switch (error.response.status) {
-                    case 500:
-                        errorMessage += 'Server error. Please try again later.';
-                        break;
-                    case 401:
-                        errorMessage += 'Please log in again.';
-                        break;
-                    case 403:
-                        errorMessage += "You don't have permission to create share links.";
-                        break;
-                    default:
-                        errorMessage += `Server error (${error.response.status}).`;
-                }
-            } else if (error.request) {
-                // Network error
-                errorMessage += 'Network error. Please check your connection.';
-            } else {
-                // Other error
-                errorMessage += error.message || 'Unknown error occurred.';
-            }
-        } finally {
-            setIsCreatingShareLink(false);
-        }
-    };
+    //         if (error.response) {
+    //             // Server responded with error status
+    //             switch (error.response.status) {
+    //                 case 500:
+    //                     errorMessage += 'Server error. Please try again later.';
+    //                     break;
+    //                 case 401:
+    //                     errorMessage += 'Please log in again.';
+    //                     break;
+    //                 case 403:
+    //                     errorMessage += "You don't have permission to create share links.";
+    //                     break;
+    //                 default:
+    //                     errorMessage += `Server error (${error.response.status}).`;
+    //             }
+    //         } else if (error.request) {
+    //             // Network error
+    //             errorMessage += 'Network error. Please check your connection.';
+    //         } else {
+    //             // Other error
+    //             errorMessage += error.message || 'Unknown error occurred.';
+    //         }
+    //     } finally {
+    //         setIsCreatingShareLink(false);
+    //     }
+    // };
 
     // Effect to update source from store when it changes
     useEffect(() => {
