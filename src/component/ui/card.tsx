@@ -139,7 +139,7 @@ export const Card = ({ id, title, source, link, deleteOption }: CardProps) => {
     }, [source, link]);
 
     const handleDelete = async () => {
-        let body = {
+        const body = {
             contentId: id,
         };
         const deleteContent = await api.delete(`/content/delete-content`, { data: body });
@@ -155,6 +155,31 @@ export const Card = ({ id, title, source, link, deleteOption }: CardProps) => {
             console.error('Failed to delete content:', deleteContent);
         }
         return;
+    };
+
+    const getYoutubeEmbedUrl = (url: string) => {
+        try {
+            if (!url || url === '') return null;
+
+            const parsedUrl = new URL(url);
+            let videoId: string = '';
+
+            //Case1 : Check for standard YouTube URL
+            if (parsedUrl.hostname.includes('youtube.com')) {
+                videoId = parsedUrl.searchParams.get('v') || '';
+            }
+
+            //Case2 : Check for shortened youtu.be URL
+            else if (parsedUrl.hostname.includes('youtu.be')) {
+                videoId = parsedUrl.pathname.slice(1); // Remove leading '/'
+            }
+
+            if (!videoId) throw new Error('Invalid YouTube URL');
+
+            return `https://www.youtube.com/embed/${videoId}`;
+        } catch (error) {
+            console.error('Please add embedded url : ', error as Error);
+        }
     };
 
     return (
@@ -219,7 +244,7 @@ export const Card = ({ id, title, source, link, deleteOption }: CardProps) => {
                     {source === 'youtube' && (
                         <iframe
                             className="w-full h-48"
-                            src={link.replace('watch', 'embed').replace('?v=', '/')}
+                            src={getYoutubeEmbedUrl(link) || ''}
                             title="YouTube video player"
                             frameBorder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
