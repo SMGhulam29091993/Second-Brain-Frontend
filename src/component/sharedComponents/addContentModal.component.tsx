@@ -1,3 +1,7 @@
+/* eslint-disable react-refresh/only-export-components */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import api from '../../config/axios.config';
@@ -32,30 +36,138 @@ export const AddContentModal: React.FC<AddContentModalProps> = ({ open, onClose 
     const queryClient = useQueryClient();
     const [contentData, setContentData] = useState({});
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [validationError, setValidationError] = useState<string>('');
+
     const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { id, value } = e.target;
         setContentData((prev) => ({ ...prev, [id]: value }));
+
+        // Clear validation error when user makes changes
+        if (validationError) {
+            setValidationError('');
+        }
+    };
+
+    const validateForm = (): boolean => {
+        const data = contentData as any;
+        const { type, source, link } = data;
+
+        // Check if all fields are filled
+        if (!type || type === ContentType.NONE) {
+            setValidationError('Please select a content type');
+            return false;
+        }
+
+        if (!source || source === ContentSource.NONE) {
+            setValidationError('Please select a source');
+            return false;
+        }
+
+        if (!link || link.trim() === '') {
+            setValidationError('Please provide a valid link');
+            return false;
+        }
+
+        const url = link.toLowerCase();
+
+        // YouTube validation
+        if (source === ContentSource.YOUTUBE) {
+            if (type !== ContentType.VIDEO) {
+                setValidationError('YouTube source requires Video content type');
+                return false;
+            }
+            if (!url.includes('youtu.be') && !url.includes('youtube.com')) {
+                setValidationError('Please provide a valid YouTube URL (youtube.com or youtu.be)');
+                return false;
+            }
+        }
+
+        // Video type validation
+        if (type === ContentType.VIDEO) {
+            if (source !== ContentSource.YOUTUBE) {
+                setValidationError('Video content type requires YouTube source');
+                return false;
+            }
+            if (!url.includes('youtu.be') && !url.includes('youtube.com')) {
+                setValidationError('Please provide a valid YouTube URL (youtube.com or youtu.be)');
+                return false;
+            }
+        }
+
+        // GitHub validation
+        if (source === ContentSource.GITHUB) {
+            if (type !== ContentType.REPOSITORY) {
+                setValidationError('GitHub source requires Repository content type');
+                return false;
+            }
+            if (!url.includes('github.com')) {
+                setValidationError('Please provide a valid GitHub URL (github.com)');
+                return false;
+            }
+        }
+
+        // Repository type validation
+        if (type === ContentType.REPOSITORY) {
+            if (source !== ContentSource.GITHUB) {
+                setValidationError('Repository content type requires GitHub source');
+                return false;
+            }
+            if (!url.includes('github.com')) {
+                setValidationError('Please provide a valid GitHub URL (github.com)');
+                return false;
+            }
+        }
+
+        // Twitter validation
+        if (source === ContentSource.TWITTER) {
+            if (!url.includes('twitter.com/') && !url.includes('x.com/')) {
+                setValidationError('Please provide a valid Twitter/X URL (twitter.com)');
+                return false;
+            }
+        }
+
+        // Facebook validation
+        if (source === ContentSource.FACEBOOK) {
+            if (!url.includes('facebook.com')) {
+                setValidationError('Please provide a valid Facebook URL (facebook.com)');
+                return false;
+            }
+        }
+
+        return true;
     };
 
     const handleSubmit = async () => {
-        setIsLoading(true);
-        const res = await api.post('/content/add-content', contentData);
-
-        if (res.status === 200 || res.status === 201) {
-            toast.success('Content added successfully!');
-            setTimeout(() => {
-                setIsLoading(false);
-                setContentData({});
-                queryClient.invalidateQueries({ queryKey: ['allContent'] });
-                onClose();
-            }, 1000);
-        } else {
-            toast.error('Failed to add content. Please try again.');
-            setIsLoading(false);
+        // Validate form before submitting
+        if (!validateForm()) {
+            toast.error(validationError);
             return;
         }
-        return res.data.data;
+
+        setIsLoading(true);
+        try {
+            const res = await api.post('/content/add-content', contentData);
+
+            if (res.status === 200 || res.status === 201) {
+                toast.success('Content added successfully!');
+                setTimeout(() => {
+                    setIsLoading(false);
+                    setContentData({});
+                    setValidationError('');
+                    queryClient.invalidateQueries({ queryKey: ['allContent'] });
+                    onClose();
+                }, 1000);
+            } else {
+                toast.error('Failed to add content. Please try again.');
+                setIsLoading(false);
+            }
+            return res.data.data;
+        } catch (error) {
+            toast.error('Failed to add content. Please try again.');
+            setIsLoading(false);
+        }
     };
+
     return (
         <>
             {open && (
@@ -110,6 +222,11 @@ export const AddContentModal: React.FC<AddContentModalProps> = ({ open, onClose 
                                     className="outline-0 border border-slate-400 m-2 p-2 rounded-md w-full placeholder:text-black"
                                     onChange={onChangeHandler}
                                 />
+                                {validationError && (
+                                    <div className="text-red-500 text-sm mt-2 w-full text-center">
+                                        {validationError}
+                                    </div>
+                                )}
                             </div>
                             <div className="flex justify-end mt-2 py-2">
                                 <Button
