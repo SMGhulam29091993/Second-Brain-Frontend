@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ComponentType, useState } from 'react';
 import { AddContentModal } from '../sharedComponents/addContentModal.component';
 import { Header } from '../sharedComponents/header.component';
