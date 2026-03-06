@@ -1,7 +1,7 @@
 // ./components/ui/button.tsx
 import { ReactElement } from 'react';
 
-type Variants = 'primary' | 'secondary';
+type Variants = 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info';
 type Sizes = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps {
@@ -20,6 +20,10 @@ export interface ButtonProps {
 const variantStyles: Record<Variants, string> = {
     primary: 'bg-blue-600 text-white hover:bg-blue-300 hover:text-black focus:ring-purple-300',
     secondary: 'bg-blue-300 text-black hover:bg-blue-600 hover:text-white focus:ring-purple-700',
+    success: 'bg-green-600 text-white hover:bg-green-300 hover:text-black focus:ring-purple-300',
+    danger: 'bg-red-600 text-white hover:bg-red-300 hover:text-black focus:ring-purple-300',
+    warning: 'bg-yellow-600 text-white hover:bg-yellow-300 hover:text-black focus:ring-purple-300',
+    info: 'bg-cyan-600 text-white hover:bg-cyan-300 hover:text-black focus:ring-purple-300',
 };
 
 const sizeStyles: Record<Sizes, string> = {
@@ -58,7 +62,7 @@ export const Button = ({
       `}
         >
             {loading ? (
-                <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                <span className="animate-spin h-6 w-6 border-2 border-white border-t-transparent rounded-full" />
             ) : (
                 <>
                     {startIcon && <span className="md:mr-2">{startIcon}</span>}
