@@ -4,17 +4,21 @@ import { ComponentType, useState } from 'react';
 import { AddContentModal } from '../sharedComponents/addContentModal.component';
 import { Header } from '../sharedComponents/header.component';
 import { DeleteContentModal } from '../sharedComponents/deleteModal.component';
+import { useLocation } from 'react-router-dom';
 
 export function AppLayout<T extends object>(WrappedComponent: ComponentType<T>) {
     return (props: any) => {
+        const location = useLocation();
         const [open, setOpen] = useState<boolean>(false);
+
+        const showSource = location.pathname.split('/')[1] === 'shared-summary';
 
         const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
         const [contentId, setContentId] = useState<string>('');
 
         return (
             <div className="flex flex-col">
-                <Header />
+                <Header showSource={showSource} />
                 <AddContentModal open={open} onClose={() => setOpen(false)} />
                 <DeleteContentModal
                     open={deleteModalOpen}

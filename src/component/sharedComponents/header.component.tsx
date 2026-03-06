@@ -19,6 +19,10 @@ export interface ContentDto {
     __v?: number;
 }
 
+interface HeaderProps {
+    showSource: boolean;
+}
+
 interface SourceDto {
     _id: string;
     name: string;
@@ -27,7 +31,7 @@ interface SourceDto {
     __v: number;
 }
 
-export const Header = () => {
+export const Header: React.FC<HeaderProps> = ({ showSource }) => {
     const [source, setSource] = useState<string>(''); // Default source
     const [sourceArray, setSourceArray] = useState<SourceDto[]>([]); // State to hold sources
 
@@ -105,25 +109,27 @@ export const Header = () => {
                     <MoonIcon />
                 </div>
             </div>
-            <div className="flex items-center gap-2">
-                <select
-                    id="source"
-                    className="bg-slate-700 border border-slate-400 rounded-md p-2 capitalize"
-                    value={source}
-                    onChange={(e) => setSource((e.target as HTMLSelectElement).value || '')}
-                >
-                    <option value="">All Content</option>
-                    {sourceArray.map((source) => (
-                        <option
-                            key={source._id}
-                            value={source.name}
-                            className="capitalize dark:bg-black dark:text-white bg-slate-700 text-white"
-                        >
-                            {source.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
+            {!showSource && (
+                <div className="flex items-center gap-2">
+                    <select
+                        id="source"
+                        className="bg-slate-700 border border-slate-400 rounded-md p-2 capitalize"
+                        value={source}
+                        onChange={(e) => setSource((e.target as HTMLSelectElement).value || '')}
+                    >
+                        <option value="">All Content</option>
+                        {sourceArray.map((source) => (
+                            <option
+                                key={source._id}
+                                value={source.name}
+                                className="capitalize dark:bg-black dark:text-white bg-slate-700 text-white"
+                            >
+                                {source.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
         </div>
     );
 };
