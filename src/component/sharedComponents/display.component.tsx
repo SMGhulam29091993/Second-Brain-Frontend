@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -14,10 +15,12 @@ import { Card } from '../ui/card';
 
 interface HedaerProps {
     setOpen: (open: boolean) => void;
+    setDeleteModalOpen: (open: boolean) => void;
+    setContentId: (id: string) => void;
     hideShareButton?: boolean; // Optional prop to hide share button
 }
 
-const Display: React.FC<HedaerProps> = ({ setOpen }) => {
+const Display: React.FC<HedaerProps> = ({ setOpen, setDeleteModalOpen, setContentId }) => {
     useEffect(() => {
         document.title = 'Dashboard | Second Brain';
     }, []);
@@ -124,7 +127,7 @@ const Display: React.FC<HedaerProps> = ({ setOpen }) => {
         return <div>Something Went Wrong</div>;
     }
 
-    let totalPages = Math.ceil(totalCount / pageSize);
+    const totalPages = Math.ceil(totalCount / pageSize);
 
     const cardData =
         data?.data?.content.map((card: any) => ({
@@ -189,6 +192,8 @@ const Display: React.FC<HedaerProps> = ({ setOpen }) => {
                                 source={card.source}
                                 summary={card.summary}
                                 deleteOption={true}
+                                setDeleteModalOpen={setDeleteModalOpen}
+                                setContentId={setContentId}
                             />
                         ))
                     ) : (
