@@ -1,11 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../config/axios.config';
 import { DeleteIcon } from '../../icons/DeleteIcons';
 import { SummaryIcon } from '../../icons/SummaryIcon';
 
-import toast from 'react-hot-toast';
 import { FacebookIcon } from '../../icons/FacebookIcon';
 import { GithubIcon } from '../../icons/GithubIcon';
 import { TwitterIcon } from '../../icons/TwitterIcon';
@@ -18,6 +17,8 @@ interface CardProps {
     link: string;
     summary?: string;
     deleteOption?: boolean;
+    setDeleteModalOpen: (open: boolean) => void;
+    setContentId: (id: string) => void;
 }
 
 interface GithubRepo {
@@ -34,7 +35,15 @@ interface GithubRepo {
     updated_at: string;
 }
 
-export const Card = ({ id, title, source, link, deleteOption }: CardProps) => {
+export const Card = ({
+    id,
+    title,
+    source,
+    link,
+    deleteOption,
+    setDeleteModalOpen,
+    setContentId,
+}: CardProps) => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [repoData, setRepoData] = useState<GithubRepo | null>(null);
@@ -138,23 +147,9 @@ export const Card = ({ id, title, source, link, deleteOption }: CardProps) => {
         }
     }, [source, link]);
 
-    const handleDelete = async () => {
-        const body = {
-            contentId: id,
-        };
-        const deleteContent = await api.delete(`/content/delete-content`, { data: body });
-        if (deleteContent.status === 200) {
-            // Optionally, you can add a success message or refresh the content list
-            toast.success('Content deleted successfully!');
-
-            await queryClient.invalidateQueries({
-                queryKey: ['allContent'],
-            });
-        } else {
-            toast.error('Failed to delete content. Please try again.');
-            console.error('Failed to delete content:', deleteContent);
-        }
-        return;
+    const deleteModal = (id: string) => {
+        setDeleteModalOpen(true);
+        setContentId(id);
     };
 
     const getYoutubeEmbedUrl = (url: string) => {
@@ -228,7 +223,7 @@ export const Card = ({ id, title, source, link, deleteOption }: CardProps) => {
                             <Tooltip text="Delete">
                                 <span
                                     className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"
-                                    onClick={handleDelete}
+                                    onClick={() => deleteModal(id)}
                                 >
                                     <DeleteIcon />
                                 </span>
