@@ -17,8 +17,8 @@ interface CardProps {
     link: string;
     summary?: string;
     deleteOption?: boolean;
-    setDeleteModalOpen: (open: boolean) => void;
-    setContentId: (id: string) => void;
+    setDeleteModalOpen?: (open: boolean) => void;
+    setContentId?: (id: string) => void;
 }
 
 interface GithubRepo {
@@ -45,7 +45,6 @@ export const Card = ({
     setContentId,
 }: CardProps) => {
     const navigate = useNavigate();
-    const queryClient = useQueryClient();
     const [repoData, setRepoData] = useState<GithubRepo | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -148,8 +147,8 @@ export const Card = ({
     }, [source, link]);
 
     const deleteModal = (id: string) => {
-        setDeleteModalOpen(true);
-        setContentId(id);
+        setDeleteModalOpen?.(true);
+        setContentId?.(id);
     };
 
     const getYoutubeEmbedUrl = (url: string) => {
