@@ -1,13 +1,13 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import api from '../../config/axios.config';
 import { BrainIcon } from '../../icons/BrainIcon';
+import { LogoutIcon } from '../../icons/LogoutIcon';
 import { MoonIcon } from '../../icons/MoonIcon';
 import { SunIcon } from '../../icons/SunIcon';
-import { useSourceStore } from '../../store/sourceStore';
 import { useAuthStore } from '../../store/authStore';
-import { LogoutIcon } from '../../icons/LogoutIcon';
+import { useSourceStore } from '../../store/sourceStore';
 import { Button } from '../ui/button';
 
 export interface ContentDto {
@@ -31,17 +31,6 @@ interface SourceDto {
     __v: number;
 }
 
-import { useQuery } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import api from '../../config/axios.config';
-import { BrainIcon } from '../../icons/BrainIcon';
-import { MoonIcon } from '../../icons/MoonIcon';
-import { SunIcon } from '../../icons/SunIcon';
-import { useSourceStore } from '../../store/sourceStore';
-import { useAuthStore } from '../../store/authStore';
-import { LogoutIcon } from '../../icons/LogoutIcon';
-import { Button } from '../ui/button';
 
 export const Header = () => {
     const [theme, setTheme] = useState<'light' | 'dark'>(
