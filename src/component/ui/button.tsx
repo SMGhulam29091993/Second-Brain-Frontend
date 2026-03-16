@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { ReactElement } from 'react';
 
-type Variants = 'primary' | 'secondary' | 'danger' | 'ghost';
+type Variants = 'primary' | 'secondary' | 'danger' | 'ghost' | 'info';
 type Sizes = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps {
@@ -23,6 +23,7 @@ const variantStyles: Record<Variants, string> = {
     secondary: 'bg-slate-200 text-slate-900 hover:bg-slate-300 shadow-sm hover:shadow-md focus:ring-slate-400/50 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600',
     danger: 'bg-red-500 text-white hover:bg-red-600 shadow-md hover:shadow-lg focus:ring-red-500/50',
     ghost: 'bg-transparent text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 focus:ring-slate-400/50',
+    info: 'bg-gray-500 text-white hover:bg-gray-600 shadow-md hover:shadow-lg focus:ring-gray-500/50',
 };
 
 const sizeStyles: Record<Sizes, string> = {
