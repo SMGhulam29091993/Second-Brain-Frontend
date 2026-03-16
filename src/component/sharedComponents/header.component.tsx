@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import api from '../../config/axios.config';
@@ -35,19 +35,10 @@ interface SourceDto {
     __v: number;
 }
 
-import { useQuery } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import api from '../../config/axios.config';
-import { BrainIcon } from '../../icons/BrainIcon';
-import { MoonIcon } from '../../icons/MoonIcon';
-import { SunIcon } from '../../icons/SunIcon';
-import { useSourceStore } from '../../store/sourceStore';
-import { useAuthStore } from '../../store/authStore';
-import { LogoutIcon } from '../../icons/LogoutIcon';
-import { Button } from '../ui/button';
-
 export const Header: React.FC<HeaderProps> = ({ showSource }) => {
+    const [theme, setTheme] = useState<'light' | 'dark'>(
+        (localStorage.getItem('theme') as 'light' | 'dark') || 'light'
+    );
     const [source, setSource] = useState<string>(''); // Default source
     const [sourceArray, setSourceArray] = useState<SourceDto[]>([]); // State to hold sources
 
@@ -75,6 +66,10 @@ export const Header: React.FC<HeaderProps> = ({ showSource }) => {
         }
         localStorage.setItem('theme', theme);
     }, [theme]);
+
+    useEffect(() => {
+        setSourceArray(sources);
+    }, [sources]);
 
     const toggleTheme = () => {
         setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
@@ -130,7 +125,7 @@ export const Header: React.FC<HeaderProps> = ({ showSource }) => {
                     </motion.button>
 
                     <Button
-                        variants="ghost"
+                        variants="info"
                         size="sm"
                         text="Logout"
                         startIcon={<LogoutIcon />}
@@ -160,6 +155,6 @@ export const Header: React.FC<HeaderProps> = ({ showSource }) => {
                     </select>
                 </div>
             )}
-        </div>
+        </header>
     );
 };

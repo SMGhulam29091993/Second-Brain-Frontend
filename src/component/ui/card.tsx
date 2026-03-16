@@ -1,14 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DeleteIcon } from '../../icons/DeleteIcons';
 import { SummaryIcon } from '../../icons/SummaryIcon';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { FacebookIcon } from '../../icons/FacebookIcon';
 import { GithubIcon } from '../../icons/GithubIcon';
 import { TwitterIcon } from '../../icons/TwitterIcon';
 import { YoutubeIcon } from '../../icons/YoutubeIcons';
 import { Tooltip } from './tooltip';
+import api from '../../config/axios.config';
+import toast from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface CardProps {
     id: string;
@@ -45,6 +49,9 @@ export const Card = ({
     setContentId,
 }: CardProps) => {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const cardRef = useRef<HTMLDivElement>(null);
+    const [isVisible, setIsVisible] = useState(true);
     const [repoData, setRepoData] = useState<GithubRepo | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -142,6 +149,20 @@ export const Card = ({
     const deleteModal = (id: string) => {
         setDeleteModalOpen?.(true);
         setContentId?.(id);
+    };
+
+    const handleDelete = async () => {
+        const body = { contentId: id };
+        try {
+            const response = await api.delete(`/content/delete-content`, { data: body });
+            if (response.status === 200) {
+                toast.success('Deleted');
+                await queryClient.invalidateQueries({ queryKey: ['allContent'] });
+                setShowDeleteConfirm(false);
+            }
+        } catch (err) {
+            toast.error('Failed to delete');
+        }
     };
 
     const getYoutubeEmbedUrl = (url: string) => {
