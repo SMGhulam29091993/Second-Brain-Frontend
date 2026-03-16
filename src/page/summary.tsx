@@ -8,11 +8,14 @@ import api from '../config/axios.config';
 import { EyeIcon } from '../icons/EyeIcon';
 import { PreviousIcon } from '../icons/PreviousIcon';
 import { ShareIcon } from '../icons/ShareIcons';
+import { ShareModal } from '../component/sharedComponents/shareModal.component';
 
 const SummaryPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [isCreatingShareLink, setIsCreatingShareLink] = useState<boolean>(false);
+    const [shareOpen, setShareOpen] = useState<boolean>(false);
+    const [shareLink, setShareLink] = useState<string>('');
 
     const fetchContent = async () => {
         const response = await api.get(`/content/summary/${id}`);
@@ -34,38 +37,16 @@ const SummaryPage: React.FC = () => {
         try {
             const resp = await api.post(`/link/summary-link/${id}`);
             if (resp.data && resp.data.data && resp.data.data.link) {
-                console.log(resp.data.data.link);
-
-                const shareLink = `${resp.data.data.link}`;
-                toast.success('Share link created successfully!');
-                await navigator.clipboard.writeText(shareLink);
-                alert('Share link copied to clipboard! : ' + shareLink);
+                const link = `${resp.data.data.link}`;
+                setShareLink(link);
+                setShareOpen(true);
+                toast.success('Share link generated!');
             } else {
                 throw new Error('Invalid response format');
             }
         } catch (error: any) {
             console.error('Error creating share link:', error);
-            let errorMessage = 'Failed to create share link. ';
-            if (error.response) {
-                switch (error.response.status) {
-                    case 500:
-                        errorMessage += 'Server error. Please try again later.';
-                        break;
-                    case 401:
-                        errorMessage += 'Please log in again.';
-                        break;
-                    case 403:
-                        errorMessage += "You don't have permission to create share links.";
-                        break;
-                    default:
-                        errorMessage += `Server error (${error.response.status}).`;
-                }
-            } else if (error.request) {
-                errorMessage += 'Network error. Please check your connection.';
-            } else {
-                errorMessage += error.message || 'Unknown error occurred.';
-            }
-            toast.error(errorMessage);
+            toast.error('Failed to create share link.');
         } finally {
             setIsCreatingShareLink(false);
         }
@@ -102,18 +83,20 @@ const SummaryPage: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4">
+            <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} shareLink={shareLink} />
             <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                         {content.title}
                     </h1>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
                         <Button
                             variants="secondary"
                             text="Back"
                             size="md"
                             startIcon={<PreviousIcon />}
                             onClick={() => navigate('/dashboard')}
+                            className="w-full sm:w-auto"
                         />
                         <Button
                             variants="secondary"
@@ -121,8 +104,10 @@ const SummaryPage: React.FC = () => {
                             startIcon={<ShareIcon />}
                             size="md"
                             onClick={createShareLink}
+                            className="w-full sm:w-auto"
                         />
                     </div>
+
                 </div>
 
                 {videoId && (

@@ -18,7 +18,7 @@ function App() {
     const token = useAuthStore((state) => state.token);
 
     return (
-        <div className="bg-slate-100 dark:bg-black">
+        <div className="min-h-screen w-full bg-slate-100 dark:bg-black overflow-x-hidden">
             <BrowserRouter>
                 <Suspense fallback={<div className="dark:text-white text-black">Loading...</div>}>
                     <Routes>
