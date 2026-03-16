@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -12,9 +13,12 @@ import { Card } from '../ui/card';
 
 interface HeaderProps {
     setOpen: (open: boolean) => void;
+    setDeleteModalOpen: (open: boolean) => void;
+    setContentId: (id: string) => void;
+    hideShareButton?: boolean; // Optional prop to hide share button
 }
 
-const Display: React.FC<HeaderProps> = ({ setOpen }) => {
+const Display: React.FC<HedaerProps> = ({ setOpen, setDeleteModalOpen, setContentId }) => {
     useEffect(() => {
         document.title = 'Dashboard | SecondBrain';
     }, []);
@@ -65,19 +69,36 @@ const Display: React.FC<HeaderProps> = ({ setOpen }) => {
     }
 
     if (isError) {
-        return (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-full mb-4">
-                    <svg className="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Failed to load content</h3>
-                <p className="text-slate-500 dark:text-slate-400">Please check your connection and try again.</p>
-            </div>
-        );
+        toast.error('Something went wrong. Please try again later.');
+        console.error('Error fetching data:', error);
+        return <div>Something Went Wrong</div>;
     }
 
     const totalPages = Math.ceil(totalCount / pageSize);
-    const cardData = data?.data?.content || [];
+
+    const cardData =
+        data?.data?.content.map((card: any) => ({
+            id: card._id,
+            title: card.title,
+            link: card.link,
+            source: card.source,
+            summary: card.summary, // Pass summary to Card component
+        })) || [];
+
+    const handleLogout = async () => {
+        try {
+            const res = await api.post(`/user/logout`);
+            if (!res.data.success) {
+                toast.error('Unable to logout...');
+                console.error('Unable to logout...');
+            }
+            clearToken();
+            toast.success('Logout successful!');
+            return;
+        } catch (error) {
+            console.error((error as Error).message);
+        }
+    };
 
     return (
         <div className="space-y-10 flex flex-col items-center sm:items-stretch">
@@ -109,6 +130,8 @@ const Display: React.FC<HeaderProps> = ({ setOpen }) => {
                                 source={card.source}
                                 summary={card.summary}
                                 deleteOption={true}
+                                setDeleteModalOpen={setDeleteModalOpen}
+                                setContentId={setContentId}
                             />
                         ))}
                     </motion.div>

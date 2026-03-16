@@ -1,87 +1,41 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ComponentType, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { AddContentModal } from '../sharedComponents/addContentModal.component';
 import { Header } from '../sharedComponents/header.component';
-import { Sidebar } from './sidebar';
-import { ShareModal } from '../sharedComponents/shareModal.component';
-import api from '../../config/axios.config';
-import toast from 'react-hot-toast';
-import { HomeIcon } from '../../icons/HomeIcon';
-import { ShareIcon } from '../../icons/ShareIcons';
-import { PlusIcon } from '../../icons/PlusIcons';
-import { useSourceStore } from '../../store/sourceStore';
+import { DeleteContentModal } from '../sharedComponents/deleteModal.component';
+import { useLocation } from 'react-router-dom';
 
 export function AppLayout<T extends object>(WrappedComponent: ComponentType<T>) {
     return (props: any) => {
-        const navigate = useNavigate();
+        const location = useLocation();
         const [open, setOpen] = useState<boolean>(false);
-        const [shareOpen, setShareOpen] = useState<boolean>(false);
-        const [shareLink, setShareLink] = useState<string>('');
-        const source = useSourceStore((state) => state.source);
 
-        const handleShareBrain = async () => {
-            try {
-                const resp = await api.post(`/link/brain-link`, { shareBrain: true });
-                if (resp.data?.data?.link) {
-                    setShareLink(resp.data.data.link);
-                    setShareOpen(true);
-                } else {
-                    toast.error('Failed to generate share link');
-                }
-            } catch (error) {
-                toast.error('Error creating share link');
-            }
-        };
+        const showSource = location.pathname.split('/')[1] === 'shared-summary';
 
-        const handleHomeClick = () => {
-            useSourceStore.getState().setSource('');
-            navigate('/dashboard');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
+        const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+        const [contentId, setContentId] = useState<string>('');
 
         return (
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans transition-colors duration-300">
-                <Header />
-                
-                <Sidebar 
-                    onAddContent={() => setOpen(true)}
-                />
-                
+            <div className="flex flex-col">
+                <Header showSource={showSource} />
                 <AddContentModal open={open} onClose={() => setOpen(false)} />
-                <ShareModal 
-                    open={shareOpen} 
-                    onClose={() => setShareOpen(false)} 
-                    shareLink={shareLink} 
+                <DeleteContentModal
+                    open={deleteModalOpen}
+                    onClose={() => setDeleteModalOpen(false)}
+                    contentId={contentId}
                 />
-                
-                <main className="px-4 sm:pl-28 md:pl-72 pt-32 sm:pt-24 pb-24 sm:pb-8 transition-all duration-300">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="max-w-7xl mx-auto"
-                    >
-                        <WrappedComponent {...props} setOpen={setOpen} />
-                    </motion.div>
-                </main>
-
-                {/* Mobile Bottom Navigation Bar */}
-                <div 
-                    onClick={(e) => e.stopPropagation()}
-                    className="fixed bottom-0 left-0 right-0 h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 flex items-center justify-around px-6 sm:hidden z-50 pointer-events-auto"
-                >
-                    <MobileNavItem 
-                        icon={<PlusIcon />} 
-                        label="Add" 
-                        onClick={() => setOpen(true)}
-                    />
-                    
-                    <MobileNavItem 
-                        icon={<HomeIcon />} 
-                        label="Home" 
-                        active={!source}
-                        onClick={handleHomeClick}
-                    />
+                <div className="flex flex-col gap-2" style={{ height: 'calc(100vh - 4.55rem)' }}>
+                    <div className="flex items-center justify-center flex-wrap gap-2 p-3 w-full h-full overflow-auto">
+                        <WrappedComponent
+                            {...props}
+                            setOpen={setOpen}
+                            setDeleteModalOpen={setDeleteModalOpen}
+                            setContentId={setContentId}
+                        />
+                    </div>
                 </div>
             </div>
         );

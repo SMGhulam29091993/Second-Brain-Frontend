@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -63,7 +64,7 @@ const SharedBrain = () => {
         return <div>Something Went Wrong</div>;
     }
 
-    let totalPages = Math.ceil(totalCount / pageSize);
+    const totalPages = Math.ceil(totalCount / pageSize);
 
     const cardData =
         data?.data?.content.map((card: any) => ({

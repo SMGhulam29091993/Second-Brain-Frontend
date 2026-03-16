@@ -1,12 +1,9 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../config/axios.config';
 import { DeleteIcon } from '../../icons/DeleteIcons';
 import { SummaryIcon } from '../../icons/SummaryIcon';
 
-import toast from 'react-hot-toast';
 import { FacebookIcon } from '../../icons/FacebookIcon';
 import { GithubIcon } from '../../icons/GithubIcon';
 import { TwitterIcon } from '../../icons/TwitterIcon';
@@ -20,6 +17,8 @@ interface CardProps {
     link: string;
     summary?: string;
     deleteOption?: boolean;
+    setDeleteModalOpen?: (open: boolean) => void;
+    setContentId?: (id: string) => void;
 }
 
 interface GithubRepo {
@@ -36,11 +35,16 @@ interface GithubRepo {
     updated_at: string;
 }
 
-export const Card = ({ id, title, source, link, deleteOption }: CardProps) => {
+export const Card = ({
+    id,
+    title,
+    source,
+    link,
+    deleteOption,
+    setDeleteModalOpen,
+    setContentId,
+}: CardProps) => {
     const navigate = useNavigate();
-    const queryClient = useQueryClient();
-    const cardRef = useRef<HTMLDivElement>(null);
-    const [isVisible, setIsVisible] = useState(true);
     const [repoData, setRepoData] = useState<GithubRepo | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -135,19 +139,9 @@ export const Card = ({ id, title, source, link, deleteOption }: CardProps) => {
         }
     }, [source, link]);
 
-    const handleDelete = async () => {
-        const body = { contentId: id };
-        try {
-            const response = await api.delete(`/content/delete-content`, { data: body });
-            if (response.status === 200) {
-                toast.success('Deleted');
-                await queryClient.invalidateQueries({ queryKey: ['allContent'] });
-            }
-        } catch (err) {
-            toast.error('Failed to delete');
-        } finally {
-            setShowDeleteConfirm(false);
-        }
+    const deleteModal = (id: string) => {
+        setDeleteModalOpen?.(true);
+        setContentId?.(id);
     };
 
     const getYoutubeEmbedUrl = (url: string) => {
@@ -231,35 +225,34 @@ export const Card = ({ id, title, source, link, deleteOption }: CardProps) => {
                             {title}
                         </h3>
                     </div>
-                </div>
-
-                <div className="flex items-center gap-1 ml-2">
-                    <Tooltip text="Summary">
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                navigate(`/summary/${id}`);
-                            }}
-                            className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg transition-colors cursor-pointer"
-                        >
-                            <SummaryIcon />
-                        </button>
-                    </Tooltip>
-                    {deleteOption && (
-                        <Tooltip text="Delete">
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setShowDeleteConfirm(true);
-                                }}
-                                className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors cursor-pointer"
+                    <div className="flex items-center gap-1 cursor-pointer">
+                        {/* will be individual share in future after implementing ai agent */}
+                        {/* <span className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"> */}
+                        {/* <ShareIcon />
+                        </span> */}
+                        <Tooltip text="Summary">
+                            <span
+                                className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"
+                                onClick={() => navigate(`/summary/${id}`)}
                             >
-                                <DeleteIcon />
-                            </button>
+                                <SummaryIcon />
+                            </span>
                         </Tooltip>
-                    )}
+                        {deleteOption && (
+                            <Tooltip text="Delete">
+                                <span
+                                    className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"
+                                    onClick={() => deleteModal(id)}
+                                >
+                                    <DeleteIcon />
+                                </span>
+                            </Tooltip>
+                        )}
+                    </div>
                 </div>
-            </div>
+                <div className="font-bold w-32">
+                    <h3 className="truncate">{title}</h3>
+                </div>
 
             {/* Content Body */}
             <div className="flex-1 overflow-hidden relative rounded-b-3xl">

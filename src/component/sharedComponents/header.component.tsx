@@ -23,6 +23,10 @@ export interface ContentDto {
     __v?: number;
 }
 
+interface HeaderProps {
+    showSource: boolean;
+}
+
 interface SourceDto {
     _id: string;
     name: string;
@@ -43,10 +47,9 @@ import { useAuthStore } from '../../store/authStore';
 import { LogoutIcon } from '../../icons/LogoutIcon';
 import { Button } from '../ui/button';
 
-export const Header = () => {
-    const [theme, setTheme] = useState<'light' | 'dark'>(
-        (localStorage.getItem('theme') as 'light' | 'dark') || 'light'
-    );
+export const Header: React.FC<HeaderProps> = ({ showSource }) => {
+    const [source, setSource] = useState<string>(''); // Default source
+    const [sourceArray, setSourceArray] = useState<SourceDto[]>([]); // State to hold sources
 
     const clearToken = useAuthStore((state) => state.clearToken);
     const activeSource = useSourceStore((state) => state.source);
@@ -136,25 +139,27 @@ export const Header = () => {
                     />
                 </div>
             </div>
-
-            {/* Mobile Horizontal Source List */}
-            <div className="sm:hidden w-full overflow-x-auto px-4 pb-3 flex gap-2 scrollbar-hide">
-                <button
-                    onClick={() => setSourceStore('')}
-                    className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${!activeSource ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}
-                >
-                    All
-                </button>
-                {sources.map((source: any) => (
-                    <button
-                        key={source._id}
-                        onClick={() => setSourceStore(source.name)}
-                        className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all capitalize ${activeSource === source.name ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}
+            {!showSource && (
+                <div className="flex items-center gap-2">
+                    <select
+                        id="source"
+                        className="bg-slate-700 border border-slate-400 rounded-md p-2 capitalize"
+                        value={source}
+                        onChange={(e) => setSource((e.target as HTMLSelectElement).value || '')}
                     >
-                        {source.name}
-                    </button>
-                ))}
-            </div>
-        </header>
+                        <option value="">All Content</option>
+                        {sourceArray.map((source) => (
+                            <option
+                                key={source._id}
+                                value={source.name}
+                                className="capitalize dark:bg-black dark:text-white bg-slate-700 text-white"
+                            >
+                                {source.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
+        </div>
     );
 };
