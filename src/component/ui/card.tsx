@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/axios.config';
 import { DeleteIcon } from '../../icons/DeleteIcons';
@@ -39,6 +39,8 @@ interface GithubRepo {
 export const Card = ({ id, title, source, link, deleteOption }: CardProps) => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const cardRef = useRef<HTMLDivElement>(null);
+    const [isVisible, setIsVisible] = useState(true);
     const [repoData, setRepoData] = useState<GithubRepo | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -81,6 +83,25 @@ export const Card = ({ id, title, source, link, deleteOption }: CardProps) => {
         if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
         return `${Math.floor(diffInSeconds / 86400)}d ago`;
     };
+
+    // Disable pointer-events when card is obscured by mobile bottom nav
+    useEffect(() => {
+        const el = cardRef.current;
+        if (!el) return;
+
+        const isMobile = window.innerWidth < 640; // matches sm breakpoint
+        if (!isMobile) {
+            setIsVisible(true);
+            return;
+        }
+
+        const observer = new IntersectionObserver(
+            ([entry]) => setIsVisible(entry.isIntersecting),
+            { threshold: 0.95, rootMargin: '0px 0px -64px 0px' }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
 
     useEffect(() => {
         if (source === 'twitter') {
@@ -157,12 +178,14 @@ export const Card = ({ id, title, source, link, deleteOption }: CardProps) => {
 
     return (
         <motion.div
+            ref={cardRef}
             layout
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
             whileHover={{ y: -5 }}
             className="group relative flex flex-col bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 w-full max-w-64 h-[320px] z-10"
+            style={{ pointerEvents: isVisible ? 'auto' : 'none' }}
         >
             {/* Delete Confirmation Overlay */}
             <AnimatePresence>
