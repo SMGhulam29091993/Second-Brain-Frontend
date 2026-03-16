@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/axios.config';
@@ -11,6 +12,7 @@ import { GithubIcon } from '../../icons/GithubIcon';
 import { TwitterIcon } from '../../icons/TwitterIcon';
 import { YoutubeIcon } from '../../icons/YoutubeIcons';
 import { Tooltip } from './tooltip';
+
 interface CardProps {
     id: string;
     title: string;
@@ -40,362 +42,285 @@ export const Card = ({ id, title, source, link, deleteOption }: CardProps) => {
     const [repoData, setRepoData] = useState<GithubRepo | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-    // Process Facebook URL to create embed URL
     const processFacebookUrl = (url: string) => {
         try {
-            // Create a URL object
             const urlObj = new URL(url);
             const hostname = urlObj.hostname;
-
-            // Check if it's a Facebook URL
             if (hostname.includes('facebook.com') || hostname.includes('fb.com')) {
-                // Encode the entire URL for the embed
                 const encodedUrl = encodeURIComponent(url);
                 return `https://www.facebook.com/plugins/post.php?href=${encodedUrl}&show_text=true&width=500`;
             }
             return url;
         } catch (e) {
-            console.error('Invalid URL:', e);
             return url;
         }
     };
 
-    // Parse GitHub URL to get owner and repo
     const parseGithubUrl = (url: string) => {
         try {
             const urlObj = new URL(url);
             const pathname = urlObj.pathname;
             const parts = pathname.split('/').filter(Boolean);
-
             if (parts.length >= 2) {
-                return {
-                    owner: parts[0],
-                    repo: parts[1],
-                };
+                return { owner: parts[0], repo: parts[1] };
             }
             return null;
         } catch (e) {
-            console.error('Invalid GitHub URL:', e);
             return null;
         }
     };
 
-    // Format date to relative time (e.g., "2 days ago")
     const formatRelativeTime = (dateString: string) => {
         const date = new Date(dateString);
         const now = new Date();
         const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-        if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
-        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-        if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`;
-        if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} months ago`;
-        return `${Math.floor(diffInSeconds / 31536000)} years ago`;
+        if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
+        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+        return `${Math.floor(diffInSeconds / 86400)}d ago`;
     };
 
     useEffect(() => {
-        //to dynamically load the Twitter widget script
         if (source === 'twitter') {
             const script = document.createElement('script');
             script.src = 'https://platform.twitter.com/widgets.js';
             script.async = true;
             document.body.appendChild(script);
-
             return () => {
                 document.body.removeChild(script);
             };
         }
-        //to dynamically load the GitHub widget script
         if (source === 'github' && link) {
-            // Fetch repository data
             const fetchRepoData = async () => {
                 const repoInfo = parseGithubUrl(link);
-                if (!repoInfo) {
-                    setError('Invalid GitHub URL');
-                    return;
-                }
-
+                if (!repoInfo) return;
                 setLoading(true);
                 try {
                     const response = await fetch(
                         `https://api.github.com/repos/${repoInfo.owner}/${repoInfo.repo}`
                     );
-                    if (!response.ok) {
-                        throw new Error('Repository not found');
-                    }
+                    if (!response.ok) throw new Error('Repo not found');
                     const data = await response.json();
                     setRepoData(data);
                 } catch (err) {
-                    setError((err as Error).message || 'Failed to fetch repository data');
+                    setError('Failed to load GitHub data');
                 } finally {
                     setLoading(false);
                 }
             };
-
             fetchRepoData();
         }
     }, [source, link]);
 
     const handleDelete = async () => {
-        const body = {
-            contentId: id,
-        };
-        const deleteContent = await api.delete(`/content/delete-content`, { data: body });
-        if (deleteContent.status === 200) {
-            // Optionally, you can add a success message or refresh the content list
-            toast.success('Content deleted successfully!');
-
-            await queryClient.invalidateQueries({
-                queryKey: ['allContent'],
-            });
-        } else {
-            toast.error('Failed to delete content. Please try again.');
-            console.error('Failed to delete content:', deleteContent);
+        const body = { contentId: id };
+        try {
+            const response = await api.delete(`/content/delete-content`, { data: body });
+            if (response.status === 200) {
+                toast.success('Deleted');
+                await queryClient.invalidateQueries({ queryKey: ['allContent'] });
+            }
+        } catch (err) {
+            toast.error('Failed to delete');
+        } finally {
+            setShowDeleteConfirm(false);
         }
-        return;
     };
 
     const getYoutubeEmbedUrl = (url: string) => {
         try {
-            if (!url || url === '') return null;
-
+            if (!url) return null;
             const parsedUrl = new URL(url);
-            let videoId: string = '';
-
-            //Case1 : Check for standard YouTube URL
+            let videoId = '';
             if (parsedUrl.hostname.includes('youtube.com')) {
                 videoId = parsedUrl.searchParams.get('v') || '';
+            } else if (parsedUrl.hostname.includes('youtu.be')) {
+                videoId = parsedUrl.pathname.slice(1);
             }
-
-            //Case2 : Check for shortened youtu.be URL
-            else if (parsedUrl.hostname.includes('youtu.be')) {
-                videoId = parsedUrl.pathname.slice(1); // Remove leading '/'
-            }
-
-            if (!videoId) throw new Error('Invalid YouTube URL');
-
-            return `https://www.youtube.com/embed/${videoId}`;
+            return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
         } catch (error) {
-            console.error('Please add embedded url : ', error as Error);
+            return null;
+        }
+    };
+
+    const SourceIcon = () => {
+        switch (source) {
+            case 'facebook': return <FacebookIcon />;
+            case 'youtube': return <YoutubeIcon />;
+            case 'twitter': return <TwitterIcon />;
+            case 'github': return <GithubIcon />;
+            default: return null;
         }
     };
 
     return (
-        <>
-            <div className="p-3 flex flex-col justify-center bg-slate-200 rounded-md border-amber-400 shadow-2xl max-w-64 min-h-52">
-                <div className="flex items-center justify-between gap-2">
-                    <div className="cursor-text font-semibold w-28">
-                        <h4 className="truncate">
-                            {source === 'facebook' ? (
-                                <span className="flex items-center flex-wrap gap-1">
-                                    <FacebookIcon />
-                                    Facebook
-                                </span>
-                            ) : source === 'youtube' ? (
-                                <span className="flex items-center flex-wrap gap-1">
-                                    <YoutubeIcon />
-                                    Youtube
-                                </span>
-                            ) : source === 'twitter' ? (
-                                <span className="flex items-center flex-wrap gap-1">
-                                    <TwitterIcon />
-                                    Twitter
-                                </span>
-                            ) : (
-                                <span className="flex items-center flex-wrap gap-1">
-                                    <GithubIcon />
-                                    Github
-                                </span>
-                            )}
-                        </h4>
-                    </div>
-                    <div className="flex items-center gap-1 cursor-pointer">
-                        {/* will be individual share in future after implementing ai agent */}
-                        {/* <span className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"> */}
-                        {/* <ShareIcon />
-                        </span> */}
-                        <Tooltip text="Summary">
-                            <span
-                                className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"
-                                onClick={() => navigate(`/summary/${id}`)}
+        <motion.div
+            layout
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            whileHover={{ y: -5 }}
+            className="group relative flex flex-col bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 w-full max-w-64 h-[320px] z-10"
+        >
+            {/* Delete Confirmation Overlay */}
+            <AnimatePresence>
+                {showDeleteConfirm && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center rounded-3xl"
+                    >
+                        <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-2xl mb-3 text-red-500">
+                            <DeleteIcon />
+                        </div>
+                        <h4 className="text-sm font-black text-slate-900 dark:text-white mb-1">Delete Memory?</h4>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 mb-4 font-medium leading-relaxed">This action cannot be undone.</p>
+                        <div className="flex items-center gap-2 w-full">
+                            <button 
+                                onClick={() => setShowDeleteConfirm(false)}
+                                className="flex-1 py-2 text-[10px] font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
                             >
-                                <SummaryIcon />
-                            </span>
-                        </Tooltip>
-                        {deleteOption && (
-                            <Tooltip text="Delete">
-                                <span
-                                    className="hover:bg-slate-300 p-1 rounded-full transition-all duration-300"
-                                    onClick={handleDelete}
-                                >
-                                    <DeleteIcon />
-                                </span>
-                            </Tooltip>
-                        )}
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={handleDelete}
+                                className="flex-1 py-2 text-[10px] font-bold bg-red-500 text-white hover:bg-red-600 rounded-xl shadow-lg shadow-red-500/30 transition-all cursor-pointer"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Header */}
+            <div className="flex items-center justify-between p-3 border-b border-slate-50 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20 rounded-t-3xl overflow-visible">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <div className="p-1.5 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex-shrink-0">
+                        <SourceIcon />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                        <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-0.5">{source}</span>
+                        <h3 className="text-[11px] font-black text-slate-900 dark:text-white truncate">
+                            {title}
+                        </h3>
                     </div>
                 </div>
-                <div className="font-bold w-32">
-                    <h3 className="truncate">{title}</h3>
-                </div>
 
-                <div className="mt-2 hover:scale-102 transition-all duration-300 cursor-pointer">
-                    {source === 'youtube' && (
-                        <iframe
-                            className="w-full h-48"
-                            src={getYoutubeEmbedUrl(link) || ''}
-                            title="YouTube video player"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerPolicy="strict-origin-when-cross-origin"
-                            allowFullScreen
-                        ></iframe>
-                    )}
-                    {source === 'twitter' && (
-                        <div className="w-full h-48 overflow-hidden p-2">
-                            <blockquote className="twitter-tweet">
-                                <a href={link.replace('x', 'twitter')}></a>
-                            </blockquote>
-                        </div>
-                    )}
-                    {source === 'facebook' && (
-                        <iframe
-                            src={processFacebookUrl(link)}
-                            className="w-full h-48"
-                            style={{ border: 'none', overflow: 'auto' }}
-                            scrolling="no"
-                            frameBorder="0"
-                            allowFullScreen={true}
-                            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                        ></iframe>
-                    )}
-                    {source === 'github' && (
-                        <div className="flex flex-col gap-1 p-2 bg-white rounded-md w-full h-48 overflow-y-auto ">
-                            {loading && (
-                                <div className="flex items-center justify-center h-full">
-                                    <div className="text-xs">Loading repository data...</div>
-                                </div>
-                            )}
-
-                            {error && (
-                                <div className="flex items-center justify-center h-full">
-                                    <div className="text-xs text-red-500">{error}</div>
-                                </div>
-                            )}
-
-                            {repoData && (
-                                <div className="flex flex-col h-full">
-                                    <div className="flex items-center gap-2">
-                                        <img
-                                            src={repoData.owner.avatar_url}
-                                            alt={repoData.owner.login}
-                                            className="w-6 h-6 rounded-full"
-                                        />
-                                        <div>
-                                            <div className="flex items-center">
-                                                <a
-                                                    href={`https://github.com/${repoData.owner.login}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-blue-600 hover:underline text-xs font-medium"
-                                                >
-                                                    {repoData.owner.login}
-                                                </a>
-                                                <span className="text-gray-500 mx-1">/</span>
-                                                <a
-                                                    href={repoData.html_url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-blue-600 hover:underline text-xs font-bold"
-                                                >
-                                                    {repoData.name}
-                                                </a>
-                                            </div>
-                                            <div className="text-xs text-gray-500">
-                                                Updated {formatRelativeTime(repoData.updated_at)}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {repoData.description && (
-                                        <p className="text-xs text-gray-700 mt-1 mb-1 line-clamp-2">
-                                            {repoData.description}
-                                        </p>
-                                    )}
-
-                                    <div className="flex items-center gap-2 mt-1">
-                                        {repoData.language && (
-                                            <div className="flex items-center gap-1">
-                                                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                                                <span className="text-xs text-gray-600">
-                                                    {repoData.language}
-                                                </span>
-                                            </div>
-                                        )}
-
-                                        <div className="flex items-center gap-1">
-                                            <svg
-                                                aria-hidden="true"
-                                                height="14"
-                                                viewBox="0 0 16 16"
-                                                version="1.1"
-                                                width="14"
-                                                className="fill-gray-600"
-                                            >
-                                                <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"></path>
-                                            </svg>
-                                            <span className="text-xs text-gray-600">
-                                                {repoData.stargazers_count}
-                                            </span>
-                                        </div>
-
-                                        <div className="flex items-center gap-1">
-                                            <svg
-                                                aria-hidden="true"
-                                                height="14"
-                                                viewBox="0 0 16 16"
-                                                version="1.1"
-                                                width="14"
-                                                className="fill-gray-600"
-                                            >
-                                                <path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z"></path>
-                                            </svg>
-                                            <span className="text-xs text-gray-600">
-                                                {repoData.forks_count}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex justify-between items-center mt-2">
-                                        <div className="scale-75 origin-left">
-                                            <a
-                                                className="github-button z-10"
-                                                href={`https://github.com/${repoData.owner.login}/${repoData.name}`}
-                                                data-icon="octicon-star"
-                                                data-size="small"
-                                                data-show-count="true"
-                                                aria-label={`Star ${repoData.owner.login}/${repoData.name} on GitHub`}
-                                            >
-                                                Star
-                                            </a>
-                                        </div>
-
-                                        <a
-                                            href={repoData.html_url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-2xs bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-1 px-2 rounded border border-gray-300 transition-colors"
-                                        >
-                                            View on GitHub
-                                        </a>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                <div className="flex items-center gap-1 ml-2">
+                    <Tooltip text="Summary">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/summary/${id}`);
+                            }}
+                            className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg transition-colors cursor-pointer"
+                        >
+                            <SummaryIcon />
+                        </button>
+                    </Tooltip>
+                    {deleteOption && (
+                        <Tooltip text="Delete">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowDeleteConfirm(true);
+                                }}
+                                className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-colors cursor-pointer"
+                            >
+                                <DeleteIcon />
+                            </button>
+                        </Tooltip>
                     )}
                 </div>
             </div>
-        </>
+
+            {/* Content Body */}
+            <div className="flex-1 overflow-hidden relative rounded-b-3xl">
+                {source === 'youtube' && (
+                    <iframe
+                        className="w-full h-full"
+                        src={getYoutubeEmbedUrl(link) || ''}
+                        title={title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                    />
+                )}
+
+                {source === 'twitter' && (
+                    <div className="w-full h-full overflow-y-auto p-4 scrollbar-hide">
+                        <blockquote className="twitter-tweet">
+                            <a href={link.replace('x', 'twitter')}></a>
+                        </blockquote>
+                    </div>
+                )}
+
+                {source === 'facebook' && (
+                    <iframe
+                        src={processFacebookUrl(link)}
+                        className="w-full h-full"
+                        style={{ border: 'none' }}
+                        allowFullScreen
+                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                    />
+                )}
+
+                {source === 'github' && (
+                    <div className="p-4 h-full flex flex-col bg-slate-50 dark:bg-slate-950/50">
+                        {loading ? (
+                            <div className="flex items-center justify-center h-full animate-pulse space-x-2">
+                                <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
+                                <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
+                                <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
+                            </div>
+                        ) : error ? (
+                            <div className="flex items-center justify-center h-full text-slate-400 text-xs italic">
+                                {error}
+                            </div>
+                        ) : repoData && (
+                            <div className="flex flex-col h-full gap-3">
+                                <div className="flex items-center gap-3">
+                                    <img src={repoData.owner.avatar_url} className="w-10 h-10 rounded-xl shadow-sm" alt="" />
+                                    <div className="flex flex-col overflow-hidden">
+                                        <span className="text-xs text-slate-500 truncate">{repoData.owner.login}</span>
+                                        <a href={repoData.html_url} target="_blank" className="text-sm font-bold text-blue-600 dark:text-blue-400 hover:underline truncate">
+                                            {repoData.name}
+                                        </a>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed italic">
+                                    {repoData.description || 'No description available'}
+                                </p>
+                                <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-800">
+                                    <div className="flex items-center gap-3 text-xs font-medium text-slate-500">
+                                        <span className="flex items-center gap-1">⭐ {repoData.stargazers_count}</span>
+                                        <span className="flex items-center gap-1">🍴 {repoData.forks_count}</span>
+                                    </div>
+                                    <span className="text-[10px] text-slate-400 italic">
+                                        {formatRelativeTime(repoData.updated_at)}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            {/* Bottom bar */}
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <a
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 underline flex items-center gap-1"
+                >
+                    Visit Source
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                </a>
+            </div>
+        </motion.div>
     );
 };
