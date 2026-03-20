@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
+import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
-import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../config/axios.config';
 import { NextIcon } from '../../icons/NextIcon';
 import { PreviousIcon } from '../../icons/PreviousIcon';
@@ -43,7 +42,7 @@ const Display: React.FC<HeaderProps> = ({ setOpen }) => {
         return response.data;
     };
 
-    const { isLoading, isError, data, error } = useQuery({
+    const { isLoading, isError, data } = useQuery({
         queryKey: ['allContent', source, pageNumber, pageSize],
         queryFn: fetchAllContent,
     });

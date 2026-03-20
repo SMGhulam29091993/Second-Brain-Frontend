@@ -1,38 +1,35 @@
-import { ComponentType, useState } from 'react';
 import { motion } from 'framer-motion';
+import { ComponentType, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AddContentModal } from '../sharedComponents/addContentModal.component';
-import { Header } from '../sharedComponents/header.component';
-import { Sidebar } from './sidebar';
-import { ShareModal } from '../sharedComponents/shareModal.component';
-import api from '../../config/axios.config';
-import toast from 'react-hot-toast';
 import { HomeIcon } from '../../icons/HomeIcon';
-import { ShareIcon } from '../../icons/ShareIcons';
 import { PlusIcon } from '../../icons/PlusIcons';
 import { useSourceStore } from '../../store/sourceStore';
+import { AddContentModal } from '../sharedComponents/addContentModal.component';
+import { Header } from '../sharedComponents/header.component';
+import { ShareModal } from '../sharedComponents/shareModal.component';
+import { Sidebar } from './sidebar';
 
 export function AppLayout<T extends object>(WrappedComponent: ComponentType<T>) {
     return (props: any) => {
         const navigate = useNavigate();
         const [open, setOpen] = useState<boolean>(false);
         const [shareOpen, setShareOpen] = useState<boolean>(false);
-        const [shareLink, setShareLink] = useState<string>('');
+        const [shareLink] = useState<string>('');
         const source = useSourceStore((state) => state.source);
 
-        const handleShareBrain = async () => {
-            try {
-                const resp = await api.post(`/link/brain-link`, { shareBrain: true });
-                if (resp.data?.data?.link) {
-                    setShareLink(resp.data.data.link);
-                    setShareOpen(true);
-                } else {
-                    toast.error('Failed to generate share link');
-                }
-            } catch (error) {
-                toast.error('Error creating share link');
-            }
-        };
+        // const handleShareBrain = async () => {
+        //     try {
+        //         const resp = await api.post(`/link/brain-link`, { shareBrain: true });
+        //         if (resp.data?.data?.link) {
+        //             setShareLink(resp.data.data.link);
+        //             setShareOpen(true);
+        //         } else {
+        //             toast.error('Failed to generate share link');
+        //         }
+        //     } catch (error) {
+        //         toast.error('Error creating share link');
+        //     }
+        // };
 
         const handleHomeClick = () => {
             useSourceStore.getState().setSource('');

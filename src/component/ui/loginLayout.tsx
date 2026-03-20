@@ -1,8 +1,8 @@
+import { motion } from 'framer-motion';
 import { ComponentType, useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { BrainIcon } from '../../icons/BrainIcon';
-import { SunIcon } from '../../icons/SunIcon';
 import { MoonIcon } from '../../icons/MoonIcon';
+import { SunIcon } from '../../icons/SunIcon';
 
 export function LoginLayout<T extends object>(WrappedComponent: ComponentType<T>) {
     return (props: T) => {

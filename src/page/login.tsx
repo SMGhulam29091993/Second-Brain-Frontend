@@ -1,12 +1,11 @@
+import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../component/ui/button';
 import { LoginLayout } from '../component/ui/loginLayout';
 import api from '../config/axios.config';
-import { SubmitIcon } from '../icons/SubmitIcon';
 import { useAuthStore } from '../store/authStore';
-import toast from 'react-hot-toast';
-import { motion } from 'framer-motion';
 
 const LoginPage = () => {
     useEffect(() => {
