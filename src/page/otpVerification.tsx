@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { LoginLayout } from '../component/ui/loginLayout';
 import { OTPInput } from '../component/ui/otpInput';
 import api from '../config/axios.config';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import toast from 'react-hot-toast';
 
@@ -12,11 +12,14 @@ const verificationPage = () => {
     }, []);
     // const [otpValue, setOtpValue] = useState('');
     const [isComplete, setIsComplete] = useState(false);
+    const [isResending, setIsResending] = useState(false);
     // const [isDisabled, setIsDisabled] = useState(false);
 
     const params = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const setToken = useAuthStore((state) => state.setToken);
+    const email = (location.state as { email?: string } | null)?.email;
 
     const hashCode = params.hashCode ? decodeURIComponent(params.hashCode) : '';
 
@@ -53,6 +56,29 @@ const verificationPage = () => {
         // setOtpValue(otp);
         setIsComplete(false);
     };
+
+    const handleResend = async () => {
+        if (!email) {
+            toast.error('Email is missing. Please go back and try again.');
+            return;
+        }
+
+        try {
+            setIsResending(true);
+            const response = await api.post('/user/send-reset-password-email', { email });
+
+            if (response.status === 200) {
+                toast.success('Reset email sent successfully.');
+                return;
+            }
+
+            toast.error('Failed to resend. Please try again.');
+        } catch (error) {
+            toast.error('Failed to resend. Please try again.');
+        } finally {
+            setIsResending(false);
+        }
+    };
     return (
         <>
             <div className="flex items-center justify-center p-4">
@@ -86,8 +112,15 @@ const verificationPage = () => {
 
                     <div className="space-y-3">
                         <div className="text-center">
-                            <button className="text-sm text-blue-600 hover:text-blue-800 underline">
-                                Didn't receive the code? Resend
+                            <button
+                                type="button"
+                                onClick={handleResend}
+                                disabled={isResending}
+                                className="text-sm text-blue-600 hover:text-blue-800 underline disabled:opacity-60 disabled:cursor-not-allowed"
+                            >
+                                {isResending
+                                    ? 'Resending...'
+                                    : "Didn't receive the code? Resend"}
                             </button>
                         </div>
                     </div>

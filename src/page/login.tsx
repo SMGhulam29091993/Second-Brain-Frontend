@@ -36,7 +36,9 @@ const LoginPage = () => {
                 const token = resp.data.data.token;
                 if (!token) {
                     const hashCode = resp.data.data;
-                    navigate(`/verify-email/${encodeURIComponent(hashCode)}`);
+                    navigate(`/verify-email/${encodeURIComponent(hashCode)}`, {
+                        state: { email: formData.email },
+                    });
                     return;
                 }
                 setToken(resp.data.data.token);

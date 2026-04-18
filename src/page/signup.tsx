@@ -92,7 +92,9 @@ const RegisterPage = () => {
                 const hashCode = res.data.data.hashedCode;
                 if (hashCode) {
                     toast.success('Registration successful! Please verify your email.');
-                    navigate(`/verify-email/${encodeURIComponent(hashCode)}`);
+                    navigate(`/verify-email/${encodeURIComponent(hashCode)}`, {
+                        state: { email: formData.email },
+                    });
                 }
             }
         } catch (err: any) {
