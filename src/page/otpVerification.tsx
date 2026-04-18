@@ -65,10 +65,10 @@ const verificationPage = () => {
 
         try {
             setIsResending(true);
-            const response = await api.post('/user/send-reset-password-email', { email });
+            const response = await api.post('/user/resend-verification-email', { email });
 
             if (response.status === 200) {
-                toast.success('Reset email sent successfully.');
+                toast.success('Verification code resent successfully.');
                 return;
             }
 
@@ -82,13 +82,14 @@ const verificationPage = () => {
     return (
         <>
             <div className="flex items-center justify-center p-4">
-                <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
+                <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl p-8 max-w-md w-full border border-slate-100 dark:border-slate-800">
                     <div className="text-center mb-8">
-                        <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                            Enter Verification Code
+                        <h1 className="text-2xl font-black text-slate-900 dark:text-white mb-3">
+                            Verify your Email
                         </h1>
-                        <p className="text-gray-600">
-                            We've sent a 6-digit code to your phone number
+                        <p className="text-slate-500 dark:text-slate-400 font-medium">
+                            We've sent a 6-digit code to <br/>
+                            <span className="text-blue-600 dark:text-blue-400 font-bold">{email || 'your email'}</span>
                         </p>
                     </div>
 

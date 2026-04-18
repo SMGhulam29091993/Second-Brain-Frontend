@@ -12,6 +12,7 @@ This document describes the architectural design, technology stack, and project 
     - [TanStack Query v5](https://tanstack.com/query/latest) (Server state & Caching)
 - **Routing:** [React Router 7](https://reactrouter.com/)
 - **Styling:** [Tailwind CSS 4](https://tailwindcss.com/)
+- **Animations:** [Framer Motion](https://www.framer.com/motion/)
 - **API Client:** [Axios](https://axios-http.com/)
 - **Notifications:** [React Hot Toast](https://react-hot-toast.com/)
 
@@ -24,8 +25,8 @@ src/
 ├── assets/             # Static assets (images, logos)
 ├── component/          # React components
 │   ├── Auth/           # Authentication-related components (e.g., PrivateRoute)
-│   ├── sharedComponents/ # Reusable complex components (Header, Modal, etc.)
-│   └── ui/             # Atomic UI components (Button, Card, Input, Layout)
+│   ├── sharedComponents/ # Reusable complex components (Header, Modal, ErrorBoundary, etc.)
+│   └── ui/             # Atomic UI components (Button, Card, Input, Layouts)
 ├── config/             # Configuration files (Axios, API settings)
 ├── icons/              # Custom SVG icon components
 ├── page/               # Page-level components (Routes)
@@ -69,17 +70,28 @@ A centralized Axios instance is configured in `src/config/axios.config.tsx`:
 - **Request Interceptor:** Automatically attaches the `Authorization: Bearer <token>` header from the Zustand store.
 - **Response Interceptor:** 
     - Handles token expiration (401/403 errors).
-    - Attempts to silently refresh the token via `/user/refresh-token`.
+    - Detects `TokenExpiredError` (500 status) and attempts to silently refresh the token via `/user/refresh-token`.
     - Retries the original request upon successful refresh.
+- **Data Types:** API-related types and interfaces (e.g., `ContentDto`) are currently co-located with the components that consume them.
 
 ---
 
 ## 🎨 Styling & UI
 
 - **Tailwind CSS 4:** Modern, utility-first CSS framework for rapid UI development.
-- **AppLayout HOC:** A Higher-Order Component (`src/component/ui/appLayout.tsx`) that wraps pages with a consistent Header and Sidebar structure.
-- **Dark Mode:** Supports dark mode using Tailwind's `dark:` utility classes.
+- **Higher-Order Components (HOCs):** 
+    - **`AppLayout`**: Wraps dashboard pages with consistent Header, Sidebar, and Modals.
+    - **`LoginLayout`**: Provides a split-screen brand-focused layout for authentication pages.
+- **Dark Mode:** Supports dark mode using Tailwind's `dark:` utility classes. The theme is persisted in `localStorage` and managed within the layout HOCs.
 - **Icons:** Custom SVG icons are managed as React components in `src/icons/` for maximum flexibility and performance.
+- **Form Handling:** Forms are managed using standard React `useState` for local state tracking and manual validation.
+
+---
+
+## 🛡️ Error Handling
+
+- **Global Error Boundary:** A standard React `ErrorBoundary` wraps the application in `main.tsx` to catch and display a fallback UI for runtime crashes.
+- **API Errors:** Handled gracefully via `react-hot-toast` notifications and local error states in page components.
 
 ---
 
@@ -87,9 +99,16 @@ A centralized Axios instance is configured in `src/config/axios.config.tsx`:
 
 1. **Login/Signup:** Users authenticate via standard forms.
 2. **Token Storage:** JWT tokens are stored in the Zustand `authStore` (persisted in `localStorage`).
-3. **Route Guarding:** `App.tsx` checks for the presence of a token to redirect users between public (Login/Register) and private (Dashboard) routes.
+3. **Route Guarding:** `App.tsx` and `PrivateRoute` check for the presence of a token to redirect users between public and private routes.
 4. **Email Verification:** Implements OTP-based verification flow.
 5. **Password Management:** Complete flow for "Forgot Password" and "Change Password".
+
+---
+
+## ⚙️ Environment Variables
+
+The application relies on the following environment variables (managed via `.env` files):
+- `VITE_BASE_URL`: The base URL for the backend API.
 
 ---
 
@@ -98,4 +117,3 @@ A centralized Axios instance is configured in `src/config/axios.config.tsx`:
 - **Linting:** ESLint with TypeScript and React plugins.
 - **Formatting:** Prettier for consistent code style.
 - **Build Command:** `npm run build` (compiles TS and bundles via Vite).
-- **Environment Variables:** Managed via `.env` files (e.g., `VITE_BASE_URL`).
